@@ -419,7 +419,7 @@ function _exBlockHTML(ex, i) {
       <span class="sh-num">#</span>
       <span class="sh-type"></span>
       <span class="sh-prev">PREV</span>
-      <span class="sh-weight">KG</span>
+      <span class="sh-weight">LBS</span>
       <span class="sh-reps">REPS</span>
       <span class="sh-check"></span>
     </div>`;
