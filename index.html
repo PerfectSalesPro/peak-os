@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- PWA meta -->
+  <meta name="theme-color" content="#07070A">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Peak OS">
+  <meta name="mobile-web-app-capable" content="yes">
+
+  <!-- Icons -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="apple-touch-icon" href="icons/icon-192.svg">
+  <link rel="icon" type="image/svg+xml" href="icons/icon-192.svg">
+
+  <!-- Fonts: Barlow Condensed (data) + Outfit (body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+  <title>Peak OS</title>
+</head>
+<body>
+
+  <div class="app">
+
+    <!-- ── SCREENS ─────────────────────────────────────── -->
+    <main class="content" id="content" role="main">
+
+      <!-- HOME -->
+      <section class="screen active" id="screen-home" aria-label="Home">
+        <header class="screen-header">
+          <span class="section-label">Today</span>
+        </header>
+        <div class="card" style="animation-delay:0ms">
+          <div class="placeholder-body">
+            <svg class="placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M3 9.5L12 3L21 9.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1V9.5z"/>
+            </svg>
+            <p class="placeholder-title">Home</p>
+            <p class="placeholder-sub">Morning weigh-in, macro bars, verdict, and peptide checklist — Stage 3, 6, 7 &amp; 8.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- TRAIN — Stage 4: training tracker (JS-rendered by training-tracker.js) -->
+      <section class="screen" id="screen-train" aria-label="Train">
+        <div id="train-root"></div>
+      </section>
+
+      <!-- NUTRITION -->
+      <section class="screen" id="screen-nutrition" aria-label="Nutrition">
+        <header class="screen-header">
+          <span class="section-label">Nutrition</span>
+        </header>
+        <div class="card" style="animation-delay:0ms">
+          <div class="placeholder-body">
+            <svg class="placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 2C9 2 7 4.5 7 7c0 2 1 3.5 2 4.5V20a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-8.5c1-1 2-2.5 2-4.5C17 4.5 15 2 12 2z"/>
+              <line x1="12" y1="2" x2="12" y2="7"/>
+            </svg>
+            <p class="placeholder-title">Nutrition</p>
+            <p class="placeholder-sub">Food logger with barcode scan, macro targets, and carb-cycle day types — Stage 6.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- BODY — Stage 3: dashboard + Stage 2: import tools -->
+      <section class="screen" id="screen-body" aria-label="Body">
+        <header class="screen-header">
+          <span class="section-label">Body</span>
+          <span class="pill p-blue" id="sync-status-pill" style="margin-bottom:0">
+            <span class="dot dot-blue" aria-hidden="true"></span>
+            <span id="sync-status-text">—</span>
+          </span>
+        </header>
+
+        <!-- Stage 3: dashboard (JS-rendered by body-dashboard.js) -->
+        <div id="body-dashboard"></div>
+
+        <!-- Stage 2: import & manual entry tools -->
+        <div id="body-import-tools">
+          <div class="body-section-sep"><span class="sec">Goals</span></div>
+
+          <!-- Goal body fat % -->
+          <div class="card" style="animation-delay:0ms">
+            <div class="sec" style="margin-bottom:10px">Goal Body Fat</div>
+            <div class="form-row">
+              <div class="field">
+                <label class="field-label" for="goal-bf-input">Target Body Fat <span class="field-unit">%</span></label>
+                <input type="number" id="goal-bf-input" class="field-input" placeholder="12.0"
+                       step="0.1" min="1" max="50" inputmode="decimal" />
+              </div>
+            </div>
+            <div id="goal-bf-feedback" class="form-feedback" aria-live="polite" role="alert"></div>
+            <button class="btn-primary" id="goal-bf-submit" type="button">Save Goal</button>
+          </div>
+
+          <div class="body-section-sep"><span class="sec">Import &amp; Entry</span></div>
+
+          <!-- Quick single-field entry -->
+          <div class="card" style="animation-delay:0ms">
+            <div class="sec" style="margin-bottom:10px">Quick Entry</div>
+            <div class="form-row">
+              <div class="field field-full">
+                <label class="field-label" for="me-date">Date</label>
+                <input type="date" id="me-date" class="field-input" />
+              </div>
+            </div>
+            <div class="form-row form-row-2col">
+              <div class="field">
+                <label class="field-label" for="me-weight">Weight <span class="field-unit">lbs</span></label>
+                <input type="number" id="me-weight" class="field-input" placeholder="168.0"
+                       step="0.1" min="0" inputmode="decimal" />
+              </div>
+              <div class="field">
+                <label class="field-label" for="me-bf">Body Fat <span class="field-unit">%</span></label>
+                <input type="number" id="me-bf" class="field-input" placeholder="16.2"
+                       step="0.1" min="0" max="99.9" inputmode="decimal" />
+              </div>
+            </div>
+            <div id="me-feedback" class="form-feedback" aria-live="polite" role="alert"></div>
+            <button class="btn-primary" id="me-submit" type="button">Log Entry</button>
+          </div>
+
+          <!-- Paste JSON import -->
+          <div class="card" style="animation-delay:40ms">
+            <div class="sec" style="margin-bottom:6px">Paste JSON Import</div>
+            <p class="card-hint">Paste a <code>peakos.health.v1</code> payload from your Shortcut or clipboard.</p>
+            <textarea id="json-paste" class="json-textarea"
+              placeholder='{"schema":"peakos.health.v1","date":"2026-06-06","body":{"weightLbs":168.0,"bodyFatPct":16.2},"health":{"hrvMs":58,"restingHr":54,"sleepHours":7.4,"activeCalories":612,"steps":8400}}'
+              rows="5" aria-label="JSON payload"></textarea>
+            <div id="json-feedback" class="form-feedback" aria-live="polite" role="alert"></div>
+            <button class="btn-primary" id="json-submit" type="button">Import</button>
+          </div>
+
+          <!-- Shortcut setup guide -->
+          <div class="card" style="animation-delay:80ms">
+            <button class="guide-toggle" id="guide-toggle"
+                    aria-expanded="false" aria-controls="guide-body" type="button">
+              <span class="sec">Morning Shortcut Setup</span>
+              <svg class="guide-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor"
+                   stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <polyline points="4 6 8 10 12 6"/>
+              </svg>
+            </button>
+            <div id="guide-body" class="guide-body" hidden>
+              <p class="guide-intro">Set up the Shortcut once. Every morning it reads Apple Health, encodes your data, and opens Peak OS with it pre-loaded — no tapping required.</p>
+              <ol class="guide-steps">
+                <li class="guide-step"><span class="step-num" aria-hidden="true">1</span>
+                  <div>Open <strong>Shortcuts</strong> → tap <strong>+</strong> → name it <em>Peak OS Morning Sync</em>.</div></li>
+                <li class="guide-step"><span class="step-num" aria-hidden="true">2</span>
+                  <div>Add <strong>Get Health Sample</strong> actions for: Weight, Body Fat %, HRV, Resting Heart Rate, Sleep Analysis, Active Energy Burned, Step Count.</div></li>
+                <li class="guide-step"><span class="step-num" aria-hidden="true">3</span>
+                  <div>Add a <strong>Text</strong> action and build the JSON:
+                    <pre class="guide-code">{"schema":"peakos.health.v1","date":"[Date]","body":{"weightLbs":[Weight],"bodyFatPct":[Body Fat %]},"health":{"hrvMs":[HRV],"restingHr":[Resting HR],"sleepHours":[Sleep Hours],"activeCalories":[Active Energy],"steps":[Steps]}}</pre>
+                  </div></li>
+                <li class="guide-step"><span class="step-num" aria-hidden="true">4</span>
+                  <div>Add <strong>Encode Base64</strong> on the Text (URL-safe mode if available).</div></li>
+                <li class="guide-step"><span class="step-num" aria-hidden="true">5</span>
+                  <div>Add <strong>Open URL</strong>:
+                    <pre class="guide-code">[your-app-url]?import=[Base64 Encoded Text]</pre>
+                  </div></li>
+                <li class="guide-step"><span class="step-num" aria-hidden="true">6</span>
+                  <div>In <strong>Automation</strong>, schedule at your morning time with <strong>Run Immediately</strong> enabled.</div></li>
+              </ol>
+              <div class="guide-note">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"
+                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" width="13" height="13">
+                  <circle cx="8" cy="8" r="6"/><line x1="8" y1="5.5" x2="8" y2="8.5"/>
+                  <circle cx="8" cy="10.5" r="0.6" fill="currentColor" stroke="none"/>
+                </svg>
+                The <code>body.hume</code> block and every health field are optional — missing fields are silently skipped.
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /#body-import-tools -->
+      </section>
+
+      <!-- LABS -->
+      <section class="screen" id="screen-labs" aria-label="Labs">
+        <header class="screen-header">
+          <span class="section-label">Labs</span>
+        </header>
+        <div class="card" style="animation-delay:0ms">
+          <div class="placeholder-body">
+            <svg class="placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M9 3v10.5L5.5 19C5 19.8 5.5 21 6.5 21h11c1 0 1.5-1.2 1-2L15 13.5V3"/>
+              <line x1="8" y1="3" x2="16" y2="3"/>
+              <circle cx="10" cy="17.5" r="0.8" fill="currentColor" stroke="none"/>
+              <circle cx="14" cy="15.5" r="0.6" fill="currentColor" stroke="none"/>
+            </svg>
+            <p class="placeholder-title">Labs</p>
+            <p class="placeholder-sub">Bloodwork pipeline with biomarker ranges, health-score, and trend alerts — Stage 9.</p>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- ── TAB BAR ────────────────────────────────────── -->
+    <nav class="tab-bar" role="navigation" aria-label="Main navigation">
+
+      <button class="tab active" data-tab="home" aria-label="Home" aria-selected="true" role="tab">
+        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3 9.5L12 3L21 9.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1V9.5z"/>
+        </svg>
+        <span class="tab-label">Home</span>
+        <span class="tab-dot" aria-hidden="true"></span>
+      </button>
+
+      <button class="tab" data-tab="train" aria-label="Train" aria-selected="false" role="tab">
+        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="2" y="9.5" width="3.5" height="5" rx="1"/>
+          <rect x="6.5" y="11" width="2" height="2" rx="0.5"/>
+          <line x1="8.5" y1="12" x2="15.5" y2="12"/>
+          <rect x="15.5" y="11" width="2" height="2" rx="0.5"/>
+          <rect x="18.5" y="9.5" width="3.5" height="5" rx="1"/>
+        </svg>
+        <span class="tab-label">Train</span>
+        <span class="tab-dot" aria-hidden="true"></span>
+      </button>
+
+      <button class="tab" data-tab="nutrition" aria-label="Nutrition" aria-selected="false" role="tab">
+        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 2C9 2 7 4.5 7 7c0 2 1 3.5 2 4.5V20a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-8.5c1-1 2-2.5 2-4.5C17 4.5 15 2 12 2z"/>
+          <line x1="12" y1="2" x2="12" y2="7"/>
+        </svg>
+        <span class="tab-label">Nutrition</span>
+        <span class="tab-dot" aria-hidden="true"></span>
+      </button>
+
+      <button class="tab" data-tab="body" aria-label="Body" aria-selected="false" role="tab">
+        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="5.5" r="2"/>
+          <path d="M8 21v-5l-2-3c-.5-.8 0-2 1-2h10c1 0 1.5 1.2 1 2l-2 3v5"/>
+          <line x1="10" y1="21" x2="14" y2="21"/>
+        </svg>
+        <span class="tab-label">Body</span>
+        <span class="tab-dot" aria-hidden="true"></span>
+      </button>
+
+      <button class="tab" data-tab="labs" aria-label="Labs" aria-selected="false" role="tab">
+        <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M9 3v10.5L5.5 19C5 19.8 5.5 21 6.5 21h11c1 0 1.5-1.2 1-2L15 13.5V3"/>
+          <line x1="8" y1="3" x2="16" y2="3"/>
+          <circle cx="10" cy="17.5" r="0.8" fill="currentColor" stroke="none"/>
+          <circle cx="14" cy="15.5" r="0.6" fill="currentColor" stroke="none"/>
+        </svg>
+        <span class="tab-label">Labs</span>
+        <span class="tab-dot" aria-hidden="true"></span>
+      </button>
+
+    </nav>
+  </div><!-- /.app -->
+
+  <!-- Shared SVG gradient defs — referenced by body-dashboard.js chart fills -->
+  <svg width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true">
+    <defs>
+      <linearGradient id="cf-lime" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#BDFF00" stop-opacity="0.22"/>
+        <stop offset="100%" stop-color="#BDFF00" stop-opacity="0.02"/>
+      </linearGradient>
+      <linearGradient id="cf-amber" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#F5A623" stop-opacity="0.22"/>
+        <stop offset="100%" stop-color="#F5A623" stop-opacity="0.02"/>
+      </linearGradient>
+      <linearGradient id="cf-blue" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#4DAAFF" stop-opacity="0.22"/>
+        <stop offset="100%" stop-color="#4DAAFF" stop-opacity="0.02"/>
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <!-- Stages 1–3: data layer, calc engine, health import, body dashboard -->
+  <script type="module" src="js/app.js"></script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').catch(err => {
+          console.warn('[Peak OS] SW registration failed:', err);
+        });
+      });
+    }
+  </script>
+</body>
+</html>

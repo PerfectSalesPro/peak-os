@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="100" fill="#07070A"/>
+  <rect width="512" height="512" rx="100" fill="url(#dots)"/>
+  <defs>
+    <pattern id="dots" x="0" y="0" width="12" height="12" patternUnits="userSpaceOnUse">
+      <circle cx="1.5" cy="1.5" r="0.8" fill="#ffffff05"/>
+    </pattern>
+  </defs>
+  <!-- peak chevron -->
+  <path d="M112 336 L256 160 L400 336" fill="none" stroke="#BDFF00" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- baseline hairline -->
+  <line x1="96" y1="368" x2="416" y2="368" stroke="#2A2A2E" stroke-width="2.5"/>
+  <!-- lime dot accent -->
+  <circle cx="256" cy="160" r="10" fill="#BDFF00"/>
+</svg>

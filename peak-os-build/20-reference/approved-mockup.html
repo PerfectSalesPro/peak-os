@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Peak OS · All Screens</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07070A;
+  --s0:#0F0F12;
+  --s1:#161619;
+  --s2:#1D1D21;
+  --s3:#252529;
+  --b1:#2A2A2E;
+  --b2:#1E1E22;
+  --lime:#BDFF00;
+  --lime-d:#BDFF0018;
+  --lime-m:#BDFF0040;
+  --amber:#F5A623;
+  --amber-d:#F5A62318;
+  --blue:#4DAAFF;
+  --blue-d:#4DAAFF18;
+  --red:#FF5252;
+  --red-d:#FF525218;
+  --purple:#B06AFF;
+  --txt:#EDEAE0;
+  --txt2:#5A5A60;
+  --txt3:#2E2E33;
+  --disp:'Barlow Condensed',sans-serif;
+  --body:'Outfit',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--bg);min-height:100%}
+body{
+  font-family:var(--body);
+  background:var(--bg);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4'%3E%3Crect width='4' height='4' fill='%2307070A'/%3E%3Ccircle cx='1' cy='1' r='0.4' fill='%23ffffff05'/%3E%3C/svg%3E");
+  padding:40px 20px 60px;
+  display:flex;flex-wrap:wrap;gap:28px;justify-content:center;align-items:flex-start;
+}
+.page-lbl{
+  width:100%;text-align:center;
+  font-family:var(--body);font-size:10px;font-weight:500;
+  letter-spacing:3px;text-transform:uppercase;color:var(--txt3);
+  margin-bottom:12px;
+}
+
+/* ── PHONE SHELL ── */
+.ph{width:340px;background:#000;border-radius:42px;padding:10px;border:1.5px solid #1E1E22;flex-shrink:0;position:relative}
+.ph::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:90px;height:1.5px;background:var(--b1);border-radius:0 0 8px 8px}
+.sc{background:var(--s0);border-radius:33px;overflow:hidden;max-height:780px;overflow-y:auto;scrollbar-width:none}
+.sc::-webkit-scrollbar{display:none}
+.grp{display:flex;flex-direction:column;align-items:center;gap:10px}
+.slbl{font-family:var(--body);font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--txt3)}
+
+/* ── STATUS BAR ── */
+.sb{display:flex;justify-content:space-between;align-items:center;padding:14px 20px 4px}
+.sb-t{font-family:var(--body);color:var(--txt);font-size:13px;font-weight:500}
+.sb-i{display:flex;gap:6px;align-items:center}
+.sb-i span{font-size:11px;color:var(--txt2)}
+
+/* ── HEADER ── */
+.hd{padding:4px 16px 12px;display:flex;justify-content:space-between;align-items:center}
+.ht{font-family:var(--disp);color:var(--txt);font-size:26px;font-weight:700;letter-spacing:0.5px}
+.hd-r{display:flex;gap:6px}
+.ibtn{width:30px;height:30px;border-radius:8px;background:var(--s2);border:0.5px solid var(--b1);display:flex;align-items:center;justify-content:center;color:var(--txt2);font-size:13px}
+
+/* ── CONTENT ── */
+.s{padding:0 13px 14px}
+
+/* ── SECTION LABEL ── */
+.sec{font-family:var(--body);color:var(--txt3);font-size:9px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;margin:8px 0 7px}
+
+/* ── CARDS ── */
+.card{background:var(--s1);border:0.5px solid var(--b2);border-radius:12px;padding:13px;margin-bottom:8px;animation:fadeUp 0.4s ease both}
+.card-xs{background:var(--s1);border:0.5px solid var(--b2);border-radius:10px;padding:10px 12px;margin-bottom:6px;animation:fadeUp 0.4s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── PILLS ── */
+.pill{display:inline-flex;align-items:center;gap:5px;border-radius:20px;padding:4px 10px;font-size:9px;font-weight:600;letter-spacing:0.3px;margin-bottom:9px}
+.p-lime{background:var(--lime-d);border:0.5px solid var(--lime-m);color:var(--lime)}
+.p-amber{background:var(--amber-d);border:0.5px solid #F5A62335;color:var(--amber)}
+.p-blue{background:var(--blue-d);border:0.5px solid #4DAAFF30;color:var(--blue)}
+.p-red{background:var(--red-d);border:0.5px solid #FF525230;color:var(--red)}
+.p-dim{background:var(--s2);border:0.5px solid var(--b1);color:var(--txt2)}
+.dot{width:5px;height:5px;border-radius:50%;flex-shrink:0}
+.dot-lime{background:var(--lime)}
+.dot-amber{background:var(--amber)}
+.dot-blue{background:var(--blue)}
+.dot-red{background:var(--red)}
+.dot-purple{background:var(--purple)}
+
+/* ── BIG NUMBERS ── */
+.big-num{font-family:var(--disp);font-weight:800;color:var(--txt)}
+.num-hero{font-size:44px;line-height:1}
+.num-lg{font-size:28px;line-height:1}
+.num-md{font-size:20px;line-height:1}
+.num-sm{font-size:15px;line-height:1}
+.num-unit{font-family:var(--body);font-size:12px;font-weight:400;color:var(--txt2);margin-left:2px}
+
+/* ── BARS ── */
+.bar-track{height:3px;background:var(--s3);border-radius:2px;overflow:hidden;flex:1}
+.bar-fill{height:100%;border-radius:2px;transition:width 0.8s cubic-bezier(0.4,0,0.2,1)}
+.bf-lime{background:var(--lime);box-shadow:0 0 6px var(--lime-m)}
+.bf-amber{background:var(--amber);box-shadow:0 0 6px #F5A62340}
+.bf-blue{background:var(--blue);box-shadow:0 0 6px #4DAAFF40}
+.bf-gray{background:var(--s3)}
+.bf-white{background:var(--txt);box-shadow:0 0 6px rgba(255,255,255,0.15)}
+
+/* ── MACRO ROW ── */
+.mac-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.mac-row:last-child{margin-bottom:0}
+.mac-lbl{font-family:var(--body);color:var(--txt2);font-size:10px;width:50px}
+.mac-val{font-family:var(--disp);font-size:13px;font-weight:700;color:var(--txt);text-align:right;min-width:56px}
+.mac-tgt{font-family:var(--body);font-size:9px;color:var(--txt3)}
+.mac-ok{color:var(--lime);font-size:9px;margin-left:3px}
+
+/* ── MINI PILLS (macros grid) ── */
+.mp-grid{display:flex;gap:5px;margin-bottom:8px}
+.mp{flex:1;background:var(--s2);border-radius:8px;padding:8px 6px;text-align:center}
+.mp-v{font-family:var(--disp);font-size:15px;font-weight:700;color:var(--txt)}
+.mp-l{font-family:var(--body);font-size:8px;color:var(--txt3);margin-top:2px;white-space:nowrap}
+.mp-b{height:2px;background:var(--s3);border-radius:1px;overflow:hidden;margin-top:5px}
+.mp-f{height:100%;border-radius:1px}
+
+/* ── MICRO ROW ── */
+.micro-grid{display:flex;gap:4px;margin-top:7px}
+.mi{flex:1;background:var(--s2);border-radius:7px;padding:7px 5px;text-align:center;border:0.5px solid var(--b2)}
+.mi-l{font-family:var(--body);font-size:8px;color:var(--txt3)}
+.mi-v{font-family:var(--disp);font-size:11px;font-weight:700;color:var(--txt2);margin-top:2px}
+.mi-s{font-family:var(--body);font-size:7px;color:var(--txt3);margin-top:1px}
+
+/* ── STAT GRID ── */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px}
+.stat{background:var(--s1);border:0.5px solid var(--b2);border-radius:11px;padding:11px;animation:fadeUp 0.4s ease both}
+.stat-l{font-family:var(--body);color:var(--txt3);font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:4px}
+.stat-delta{font-family:var(--body);font-size:9px;margin-top:3px}
+
+/* ── QUICK ACTIONS ── */
+.qa{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:8px}
+.qb{background:var(--s1);border:0.5px solid var(--b2);border-radius:12px;padding:12px 10px;display:flex;flex-direction:column;gap:4px;transition:border-color 0.2s}
+.qb.prime{background:var(--lime-d);border-color:var(--lime-m)}
+.qb-icon{font-size:18px}
+.qb-l{font-family:var(--body);font-size:12px;font-weight:500;color:var(--txt)}
+.qb-s{font-family:var(--body);font-size:9px;color:var(--txt3)}
+.qb.prime .qb-s{color:var(--lime);opacity:0.7}
+
+/* ── VERDICT ── */
+.verdict{background:var(--lime-d);border-left:2px solid var(--lime);padding:8px 10px;border-radius:0 8px 8px 0;margin-top:9px}
+.verdict p{font-family:var(--body);font-size:10px;color:var(--lime);line-height:1.6;opacity:0.9}
+
+/* ── WEIGH CARD ── */
+.wcard{background:var(--s1);border:0.5px solid var(--b2);border-radius:14px;padding:14px;margin-bottom:8px}
+.wcard-top{display:flex;justify-content:space-between;align-items:flex-start}
+.wcard-sub{font-family:var(--body);font-size:10px;color:var(--txt3);margin-top:6px}
+.wcard-sub span{color:var(--txt2)}
+
+/* ── TREND BADGE ── */
+.trend{display:inline-flex;align-items:center;gap:4px;padding:4px 9px;border-radius:6px;font-family:var(--disp);font-size:13px;font-weight:700}
+.trend-lime{background:var(--lime-d);color:var(--lime)}
+.trend-red{background:var(--red-d);color:var(--red)}
+.trend-gray{background:var(--s2);color:var(--txt2)}
+
+/* ── PROJECTION ── */
+.proj{background:var(--s1);border:0.5px solid var(--b2);border-radius:12px;padding:11px 13px;display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.proj-l{font-family:var(--body);font-size:9px;color:var(--txt3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:3px}
+.proj-v{font-family:var(--disp);font-size:16px;font-weight:700;color:var(--txt)}
+.proj-s{font-family:var(--body);font-size:9px;color:var(--txt3);margin-top:2px}
+.proj-r{text-align:right}
+.proj-num{font-family:var(--disp);font-size:28px;font-weight:800;color:var(--amber);line-height:1}
+.proj-unit{font-family:var(--body);font-size:9px;color:var(--txt3);display:block;margin-top:1px}
+
+/* ── PEPTIDE ROW ── */
+.pep{background:var(--s1);border:0.5px solid var(--b2);border-radius:10px;padding:10px 12px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between}
+.pep-l{display:flex;align-items:center;gap:9px}
+.pep-n{font-family:var(--body);font-size:12px;font-weight:500;color:var(--txt)}
+.pep-d{font-family:var(--body);font-size:9px;color:var(--txt3);margin-top:1px}
+.pep-ck{width:22px;height:22px;border-radius:50%;border:1px solid var(--b1);display:flex;align-items:center;justify-content:center;font-size:10px}
+.pep-ck.done{background:var(--lime-d);border-color:var(--lime);color:var(--lime)}
+
+/* ── LOG BUTTONS ── */
+.log-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:9px}
+.lb{background:var(--s1);border:0.5px solid var(--b2);border-radius:10px;padding:10px 8px;display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center}
+.lb.prime{background:var(--lime-d);border-color:var(--lime-m)}
+.lb-icon{font-size:16px}
+.lb.prime .lb-icon{filter:drop-shadow(0 0 4px var(--lime))}
+.lb-n{font-family:var(--body);font-size:10px;font-weight:500}
+.lb.prime .lb-n{color:var(--lime)}
+.lb:not(.prime) .lb-n{color:var(--txt2)}
+.lb-s{font-family:var(--body);font-size:8px}
+.lb.prime .lb-s{color:var(--lime);opacity:0.6}
+.lb:not(.prime) .lb-s{color:var(--txt3)}
+
+/* ── FOOD ROWS ── */
+.meal-hd{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+.meal-n{font-family:var(--body);color:var(--txt2);font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase}
+.meal-rt{text-align:right}
+.meal-c{font-family:var(--disp);font-size:13px;font-weight:700;color:var(--txt2)}
+.meal-m{display:flex;gap:6px;margin-top:2px}
+.meal-m span{font-family:var(--body);font-size:8px;color:var(--txt3)}
+.fr{display:flex;align-items:center;padding:6px 0;border-bottom:0.5px solid var(--b2)}
+.fr:last-of-type{border-bottom:none}
+.fi{flex:1}
+.fn{font-family:var(--body);font-size:11px;color:var(--txt)}
+.fd{font-family:var(--body);font-size:9px;color:var(--txt3);margin-top:1px}
+.fc{font-family:var(--disp);font-size:13px;font-weight:700;color:var(--txt2);margin-right:7px}
+.fck{width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px}
+.fck.done{background:var(--lime-d);border:0.5px solid var(--lime);color:var(--lime)}
+.fck.todo{border:0.5px solid var(--b1)}
+.add-r{display:flex;align-items:center;gap:5px;padding:6px 0;font-family:var(--body);font-size:9px;color:var(--txt3)}
+
+/* ── WATER ── */
+.water{background:var(--blue-d);border:0.5px solid #4DAAFF25;border-radius:11px;padding:10px 12px;display:flex;align-items:center;justify-content:space-between;margin-bottom:7px}
+.water-l{display:flex;align-items:center;gap:8px}
+.water-n{font-family:var(--body);font-size:12px;font-weight:500;color:var(--txt)}
+.water-s{font-family:var(--body);font-size:9px;color:var(--blue);opacity:0.6;margin-top:1px}
+.water-ctrl{display:flex;align-items:center;gap:9px}
+.wbtn{width:22px;height:22px;border-radius:6px;background:var(--blue-d);border:0.5px solid #4DAAFF30;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--blue)}
+.wval{font-family:var(--disp);font-size:16px;font-weight:700;color:var(--blue)}
+
+/* ── FASTING ── */
+.fast{background:var(--s1);border:0.5px solid var(--b2);border-radius:10px;padding:10px 12px;margin-bottom:8px}
+.fast-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+.fast-l{font-family:var(--body);font-size:10px;color:var(--txt2)}
+.fast-v{font-family:var(--disp);font-size:12px;font-weight:700;color:var(--blue)}
+
+/* ── SET ROWS (training) ── */
+.ex-name{font-family:var(--body);color:var(--txt2);font-size:9px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:5px;display:flex;align-items:center;gap:6px}
+.pr-tag{background:var(--amber-d);border:0.5px solid #F5A62335;border-radius:4px;padding:1px 6px;font-family:var(--body);font-size:8px;font-weight:600;color:var(--amber)}
+.set-r{display:flex;align-items:center;gap:5px;padding:5px 0;border-bottom:0.5px solid var(--b2)}
+.set-r:last-child{border-bottom:none}
+.set-tag{font-family:var(--body);font-size:8px;font-weight:600;padding:2px 5px;border-radius:4px;min-width:32px;text-align:center}
+.t-wu{background:#FF525215;color:#FF9090}
+.t-wk{background:#4DAAFF15;color:#90CAFF}
+.t-dn{background:var(--lime-d);color:var(--lime)}
+.t-dr{background:#B06AFF15;color:#C090FF}
+.t-fl{background:#F5A62315;color:var(--amber)}
+.set-w{font-family:var(--disp);font-size:14px;font-weight:700;color:var(--txt);min-width:52px}
+.set-rp{font-family:var(--body);font-size:10px;color:var(--txt2);min-width:32px}
+.set-rpe{font-family:var(--body);font-size:9px;color:var(--txt3);flex:1}
+.set-prev{font-family:var(--body);font-size:8px;color:var(--txt3);font-style:italic}
+.ck{width:20px;height:20px;border-radius:50%;border:0.5px solid var(--b1);display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0}
+.ck.done{background:var(--lime-d);border-color:var(--lime);color:var(--lime)}
+
+/* ── REST TIMER ── */
+.rest-bar{background:var(--lime-d);border:0.5px solid var(--lime-m);border-radius:9px;padding:8px 11px;display:flex;justify-content:space-between;align-items:center;margin-top:7px;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.7}}
+.rest-info{font-family:var(--body);font-size:9px;color:var(--lime);opacity:0.8}
+.rest-t{font-family:var(--disp);font-size:22px;font-weight:800;color:var(--lime)}
+
+/* ── CALC ROW ── */
+.calc-row{display:flex;gap:5px;margin-bottom:9px}
+.calc-btn{flex:1;background:var(--s1);border:0.5px solid var(--b2);border-radius:9px;padding:9px 6px;display:flex;flex-direction:column;align-items:center;gap:3px}
+.calc-btn span:first-child{font-size:14px}
+.calc-btn span:last-child{font-family:var(--body);font-size:8px;color:var(--txt3)}
+
+/* ── TEMPLATES ── */
+.tpl{background:var(--s1);border:0.5px solid var(--b2);border-radius:11px;padding:10px 12px;margin-bottom:6px;display:flex;align-items:center;gap:10px}
+.tpl-ico{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.tpl-info{flex:1}
+.tpl-n{font-family:var(--body);font-size:12px;font-weight:600;color:var(--txt)}
+.tpl-m{font-family:var(--body);font-size:9px;color:var(--txt3);margin-top:2px}
+.tpl-s{font-family:var(--body);font-size:8px;color:var(--txt3);margin-top:1px}
+.tpl-arr{color:var(--txt3);font-size:16px}
+
+/* ── HUME GRID ── */
+.hume-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px}
+.hc{background:var(--s1);border:0.5px solid var(--b2);border-radius:10px;padding:10px}
+.hc-l{font-family:var(--body);font-size:9px;color:var(--txt3);margin-bottom:3px}
+.hc-v{font-family:var(--disp);font-size:16px;font-weight:700;color:var(--txt)}
+.hc-s{font-family:var(--body);font-size:8px;margin-top:2px}
+
+/* ── CHARTS ── */
+.ch-card{background:var(--s1);border:0.5px solid var(--b2);border-radius:12px;padding:12px;margin-bottom:8px}
+.ch-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.ch-t{font-family:var(--body);font-size:9px;color:var(--txt3);letter-spacing:1.5px;text-transform:uppercase}
+.ch-v{font-family:var(--disp);font-size:18px;font-weight:700}
+.chart-area{height:68px}
+.chart-area svg{width:100%;height:100%}
+.ch-ax{display:flex;justify-content:space-between;margin-top:4px}
+.ch-ax span{font-family:var(--body);font-size:8px;color:var(--txt3)}
+
+/* ── LABS ── */
+.cd-card{background:var(--blue-d);border:0.5px solid #4DAAFF25;border-radius:14px;padding:14px;margin-bottom:9px}
+.cd-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.cd-title{font-family:var(--body);font-size:9px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--txt2)}
+.cd-d{font-family:var(--disp);font-size:52px;font-weight:800;color:var(--txt);line-height:1}
+.cd-unit{font-family:var(--body);font-size:13px;color:var(--txt3)}
+.cd-sub{font-family:var(--body);font-size:10px;color:var(--txt3);margin-bottom:10px;margin-top:4px}
+.cd-track{height:3px;background:var(--s3);border-radius:2px;overflow:hidden}
+.cd-fill{height:100%;border-radius:2px;background:var(--blue);box-shadow:0 0 6px #4DAAFF50;width:26%}
+.cd-dates{display:flex;justify-content:space-between;margin-top:4px}
+.cd-dates span{font-family:var(--body);font-size:8px;color:var(--txt3)}
+.bm{display:flex;align-items:center;padding:6px 0;border-bottom:0.5px solid var(--b2)}
+.bm:last-child{border-bottom:none}
+.bm-n{font-family:var(--body);font-size:10px;color:var(--txt2);flex:1}
+.bm-v{font-family:var(--disp);font-size:13px;font-weight:700;min-width:78px;text-align:right;margin-right:6px}
+.bm-t{font-family:var(--body);font-size:10px;min-width:20px;text-align:right}
+.view-all{font-family:var(--body);font-size:9px;color:var(--txt3);text-align:center;padding:8px 0 0;letter-spacing:1px}
+.q-card{background:var(--s1);border:0.5px solid var(--b2);border-radius:12px;padding:12px;margin-bottom:8px}
+.q-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}
+.q-t{font-family:var(--disp);font-size:15px;font-weight:700;color:var(--txt)}
+.up-btn{display:inline-flex;align-items:center;gap:5px;background:var(--s2);border:0.5px solid var(--b1);border-radius:18px;padding:5px 12px;font-family:var(--body);font-size:10px;color:var(--txt2)}
+
+/* ── COUNTDOWN BADGE ── */
+.cd-badge{background:var(--lime-d);border:0.5px solid var(--lime-m);border-radius:6px;padding:3px 8px;font-family:var(--body);font-size:9px;font-weight:600;color:var(--lime)}
+
+/* ── LIVE WORKOUT HEADER ── */
+.live-hd{display:flex;justify-content:space-between;align-items:center;margin-bottom:11px}
+.live-t{font-family:var(--disp);font-size:16px;font-weight:700;color:var(--txt)}
+.live-sub{font-family:var(--body);font-size:10px;color:var(--txt3);font-weight:400}
+.live-timer{background:#FF525215;border:0.5px solid #FF525230;border-radius:8px;padding:4px 10px}
+.live-timer span{font-family:var(--disp);font-size:14px;font-weight:700;color:var(--red)}
+
+/* ── TAB BAR ── */
+.tb{display:flex;justify-content:space-around;padding:10px 8px 16px;background:var(--s0);border-top:0.5px solid var(--b2)}
+.tbi{display:flex;flex-direction:column;align-items:center;gap:2px;position:relative}
+.tbi-icon{font-size:20px;color:var(--txt3)}
+.tbi-l{font-family:var(--body);font-size:8px;color:var(--txt3);letter-spacing:0.5px}
+.tbi.ac .tbi-icon{color:var(--lime)}
+.tbi.ac .tbi-l{color:var(--lime)}
+.tbi.ac::after{content:'';position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--lime)}
+
+/* UTIL */
+.c-lime{color:var(--lime)}.c-amber{color:var(--amber)}.c-blue{color:var(--blue)}.c-red{color:var(--red)}.c-gray{color:var(--txt2)}.c-dim{color:var(--txt3)}
+.ex-block{margin-bottom:11px;padding:10px;background:var(--s2);border-radius:9px}
+
+/* stagger animation delays for cards */
+.card:nth-child(1){animation-delay:0.05s}
+.card:nth-child(2){animation-delay:0.1s}
+.card:nth-child(3){animation-delay:0.15s}
+.card:nth-child(4){animation-delay:0.2s}
+.stat:nth-child(1){animation-delay:0.05s}
+.stat:nth-child(2){animation-delay:0.1s}
+.stat:nth-child(3){animation-delay:0.15s}
+.stat:nth-child(4){animation-delay:0.2s}
+</style>
+</head>
+<body>
+
+<div class="page-lbl">Peak OS · Complete Screen Mockups · v2</div>
+
+<!-- ══════════════════════════ HOME ══════════════════════════ -->
+<div class="grp">
+<div class="ph"><div class="sc">
+  <div class="sb"><span class="sb-t">9:41</span><div class="sb-i"><span>●●●</span></div></div>
+  <div class="hd">
+    <div>
+      <div style="font-family:var(--body);font-size:11px;color:var(--txt3);margin-bottom:2px">Good morning</div>
+      <div class="ht">Peak OS</div>
+    </div>
+    <div class="ibtn">🔔</div>
+  </div>
+  <div class="s">
+
+    <div class="pill p-lime"><div class="dot dot-lime"></div>Training day · Push · macros adjusted</div>
+
+    <!-- WEIGH CARD -->
+    <div class="wcard">
+      <div class="wcard-top">
+        <div>
+          <div style="font-family:var(--body);font-size:9px;color:var(--txt3);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px">Morning weigh-in</div>
+          <div style="display:flex;align-items:baseline;gap:4px">
+            <span class="big-num num-hero">168.0</span>
+            <span class="num-unit">lbs</span>
+          </div>
+        </div>
+        <div class="trend trend-lime">↓ 0.5 lbs</div>
+      </div>
+      <div class="wcard-sub">BF <span>16.2%</span> · Lean mass <span>140.8 lbs</span> · <span>held this week</span></div>
+      <div class="verdict"><p>On track. Lean mass held. Deficit averaged 390 kcal — nearly perfect. Hit protein today and you're exactly where you need to be.</p></div>
+    </div>
+
+    <!-- MACRO CARD -->
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px">
+        <div style="display:flex;align-items:baseline;gap:3px">
+          <span class="big-num num-lg">1,672</span>
+          <span style="font-family:var(--body);font-size:10px;color:var(--txt3)">/ 2,200 kcal</span>
+        </div>
+        <span style="font-family:var(--disp);font-size:13px;font-weight:600;color:var(--lime)">528 left</span>
+      </div>
+      <div class="bar-track" style="margin-bottom:12px"><div class="bar-fill bf-white" style="width:76%"></div></div>
+      <div class="mac-row">
+        <span class="mac-lbl">Protein</span>
+        <div class="bar-track"><div class="bar-fill bf-lime" style="width:89%"></div></div>
+        <span class="mac-val">187<span class="mac-tgt">/210g</span><span class="mac-ok">✓</span></span>
+      </div>
+      <div class="mac-row">
+        <span class="mac-lbl">Carbs</span>
+        <div class="bar-track"><div class="bar-fill bf-blue" style="width:78%"></div></div>
+        <span class="mac-val">94<span class="mac-tgt">/120g</span></span>
+      </div>
+      <div class="mac-row">
+        <span class="mac-lbl">Fat</span>
+        <div class="bar-track"><div class="bar-fill bf-amber" style="width:80%"></div></div>
+        <span class="mac-val">44<span class="mac-tgt">/55g</span></span>
+      </div>
+      <div class="mac-row" style="margin-bottom:0">
+        <span class="mac-lbl" style="color:var(--txt3)">Net carbs</span>
+        <div class="bar-track"><div class="bar-fill bf-gray" style="width:72%"></div></div>
+        <span class="mac-val" style="color:var(--txt2)">76<span class="mac-tgt">/105g</span></span>
+      </div>
+    </div>
+
+    <!-- QUICK ACTIONS -->
+    <div class="qa">
+      <div class="qb prime">
+        <span class="qb-icon">🏋️</span>
+        <span class="qb-l">Start workout</span>
+        <span class="qb-s">Push · 6 exercises</span>
+      </div>
+      <div class="qb">
+        <span class="qb-icon">📷</span>
+        <span class="qb-l">Log meal</span>
+        <span class="qb-s">528 kcal remaining</span>
+      </div>
+    </div>
+
+    <!-- PROJECTION -->
+    <div class="proj">
+      <div>
+        <div class="proj-l">Goal projection</div>
+        <div class="proj-v">165.0 lbs · ~11.8% body fat</div>
+        <div class="proj-s">At current rate · lean mass holding</div>
+      </div>
+      <div class="proj-r">
+        <div class="proj-num">3</div>
+        <span class="proj-unit">weeks away</span>
+      </div>
+    </div>
+
+    <!-- PEPTIDES -->
+    <div class="sec">Morning peptides</div>
+    <div class="pep">
+      <div class="pep-l">
+        <div class="dot dot-amber"></div>
+        <div><div class="pep-n">BPC-157</div><div class="pep-d">250mcg · SubQ · lower abdomen L</div></div>
+      </div>
+      <div class="pep-ck done">✓</div>
+    </div>
+    <div class="pep">
+      <div class="pep-l">
+        <div class="dot dot-blue"></div>
+        <div><div class="pep-n">TB-500</div><div class="pep-d">500mcg · SubQ · lower abdomen R</div></div>
+      </div>
+      <div class="pep-ck"></div>
+    </div>
+
+    <!-- MICRO WATCH -->
+    <div class="sec">Micronutrient watch</div>
+    <div class="card-xs">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+        <span style="font-family:var(--body);font-size:10px;color:var(--txt2)">Sodium</span>
+        <span style="font-family:var(--disp);font-size:12px;font-weight:700;color:var(--txt3)">1,240 <span style="font-family:var(--body);font-size:9px">/ 2,300 mg</span></span>
+      </div>
+      <div class="bar-track"><div class="bar-fill bf-gray" style="width:54%"></div></div>
+    </div>
+    <div class="card-xs">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+        <span style="font-family:var(--body);font-size:10px;color:var(--txt2)">Fiber</span>
+        <span style="font-family:var(--disp);font-size:12px;font-weight:700;color:var(--txt3)">18 <span style="font-family:var(--body);font-size:9px">/ 38 g</span></span>
+      </div>
+      <div class="bar-track"><div class="bar-fill" style="width:47%;background:var(--lime);opacity:0.3"></div></div>
+    </div>
+
+  </div>
+  <div class="tb">
+    <div class="tbi ac"><span class="tbi-icon">⌂</span><span class="tbi-l">Home</span></div>
+    <div class="tbi"><span class="tbi-icon">⚡</span><span class="tbi-l">Train</span></div>
+    <div class="tbi"><span class="tbi-icon">◉</span><span class="tbi-l">Nutrition</span></div>
+    <div class="tbi"><span class="tbi-icon">◎</span><span class="tbi-l">Body</span></div>
+    <div class="tbi"><span class="tbi-icon">⬡</span><span class="tbi-l">Labs</span></div>
+  </div>
+</div></div>
+<div class="slbl">Home</div>
+</div>
+
+<!-- ══════════════════════════ TRAIN ══════════════════════════ -->
+<div class="grp">
+<div class="ph"><div class="sc">
+  <div class="sb"><span class="sb-t">9:41</span><div class="sb-i"><span>●●●</span></div></div>
+  <div class="hd"><span class="ht">Training</span><div class="hd-r"><div class="ibtn">⊞</div><div class="ibtn">+</div></div></div>
+  <div class="s">
+
+    <div class="stat-grid">
+      <div class="stat">
+        <div class="stat-l">Sessions</div>
+        <div><span class="big-num num-md">3</span><span class="num-unit">/4 this wk</span></div>
+        <div class="stat-delta c-blue">Push · Pull · Legs done</div>
+      </div>
+      <div class="stat">
+        <div class="stat-l">Volume</div>
+        <div><span class="big-num num-sm">28,450</span><span class="num-unit">lbs</span></div>
+        <div class="stat-delta c-lime">↑ 6% vs last week</div>
+      </div>
+    </div>
+
+    <!-- LIVE WORKOUT -->
+    <div class="card">
+      <div class="live-hd">
+        <div><span class="live-t">Push</span> <span class="live-sub">· in progress · 38 min</span></div>
+        <div class="live-timer"><span>REST 1:23</span></div>
+      </div>
+
+      <div class="ex-block">
+        <div class="ex-name">Bench Press<span class="pr-tag">★ New 1RM est.</span></div>
+        <div class="set-r"><span class="set-tag t-wu">Warm</span><span class="set-w">135 lbs</span><span class="set-rp">10 reps</span><span class="set-rpe">—</span><div class="ck done">✓</div></div>
+        <div class="set-r"><span class="set-tag t-dn">Work</span><span class="set-w">205 lbs</span><span class="set-rp">6 reps</span><span class="set-rpe">RPE 8</span><div class="ck done">✓</div></div>
+        <div class="set-r"><span class="set-tag t-dn">Work</span><span class="set-w">205 lbs</span><span class="set-rp">6 reps</span><span class="set-rpe">RPE 8.5</span><div class="ck done">✓</div></div>
+        <div class="set-r"><span class="set-tag t-wk">Work</span><span class="set-w">205 lbs</span><span class="set-rp">6 reps<span class="set-prev"> prev</span></span><span class="set-rpe">RPE ?</span><div class="ck"></div></div>
+        <div class="rest-bar">
+          <div><div class="rest-info">Rest timer · Set 4 of 4 next</div></div>
+          <span class="rest-t">1:23</span>
+        </div>
+      </div>
+
+      <div class="ex-block" style="margin-bottom:0">
+        <div class="ex-name">Incline DB Press</div>
+        <div class="set-r"><span class="set-tag t-wu">Warm</span><span class="set-w">50 lbs</span><span class="set-rp">10 reps</span><span class="set-rpe">—</span><div class="ck done">✓</div></div>
+        <div class="set-r"><span class="set-tag t-dn">Work</span><span class="set-w">75 lbs</span><span class="set-rp">8 reps</span><span class="set-rpe">RPE 8</span><div class="ck done">✓</div></div>
+        <div class="set-r"><span class="set-tag t-wk">Work</span><span class="set-w">75 lbs</span><span class="set-rp">8 reps<span class="set-prev"> prev</span></span><span class="set-rpe">RPE ?</span><div class="ck"></div></div>
+        <div class="set-r"><span class="set-tag t-dr">Drop</span><span class="set-w">55 lbs</span><span class="set-rp">12 reps</span><span class="set-rpe">to fail</span><div class="ck"></div></div>
+      </div>
+
+      <div class="add-r" style="margin-top:8px">+ Add exercise</div>
+    </div>
+
+    <!-- CALCULATORS -->
+    <div class="sec">Calculators</div>
+    <div class="calc-row">
+      <div class="calc-btn"><span>⊞</span><span>Plate calc</span></div>
+      <div class="calc-btn"><span>↗</span><span>Warm-up</span></div>
+      <div class="calc-btn"><span>📊</span><span>Volume</span></div>
+      <div class="calc-btn"><span>💪</span><span>1RM est.</span></div>
+    </div>
+
+    <!-- TEMPLATES -->
+    <div class="sec">Templates</div>
+    <div class="tpl"><div class="tpl-ico" style="background:var(--lime-d)">⚡</div><div class="tpl-info"><div class="tpl-n">Push</div><div class="tpl-m">Chest · Shoulders · Triceps</div><div class="tpl-s">6 exercises · last run Tuesday</div></div><span class="tpl-arr">›</span></div>
+    <div class="tpl"><div class="tpl-ico" style="background:var(--blue-d)">⚡</div><div class="tpl-info"><div class="tpl-n">Pull</div><div class="tpl-m">Back · Biceps · Rear delts</div><div class="tpl-s">6 exercises · last run Monday</div></div><span class="tpl-arr">›</span></div>
+    <div class="tpl"><div class="tpl-ico" style="background:var(--amber-d)">⚡</div><div class="tpl-info"><div class="tpl-n">Legs</div><div class="tpl-m">Quads · Hamstrings · Calves</div><div class="tpl-s">7 exercises · last run Saturday</div></div><span class="tpl-arr">›</span></div>
+    <div class="tpl"><div class="tpl-ico" style="background:var(--red-d)">⚡</div><div class="tpl-info"><div class="tpl-n">Arms</div><div class="tpl-m">Biceps · Triceps · Forearms</div><div class="tpl-s">5 exercises · optional day</div></div><span class="tpl-arr">›</span></div>
+
+  </div>
+  <div class="tb">
+    <div class="tbi"><span class="tbi-icon">⌂</span><span class="tbi-l">Home</span></div>
+    <div class="tbi ac"><span class="tbi-icon">⚡</span><span class="tbi-l">Train</span></div>
+    <div class="tbi"><span class="tbi-icon">◉</span><span class="tbi-l">Nutrition</span></div>
+    <div class="tbi"><span class="tbi-icon">◎</span><span class="tbi-l">Body</span></div>
+    <div class="tbi"><span class="tbi-icon">⬡</span><span class="tbi-l">Labs</span></div>
+  </div>
+</div></div>
+<div class="slbl">Train</div>
+</div>
+
+<!-- ══════════════════════════ NUTRITION ══════════════════════════ -->
+<div class="grp">
+<div class="ph"><div class="sc">
+  <div class="sb"><span class="sb-t">9:41</span><div class="sb-i"><span>●●●</span></div></div>
+  <div class="hd">
+    <span class="ht">Nutrition</span>
+    <div style="display:flex;align-items:center;gap:6px"><span style="color:var(--txt3);font-size:16px">‹</span><span style="font-family:var(--body);font-size:11px;color:var(--txt2)">Today</span><span style="color:var(--txt3);font-size:16px">›</span></div>
+  </div>
+  <div class="s">
+
+    <div class="pill p-lime">Training day · +20g carbs · +200 kcal vs rest day</div>
+
+    <!-- MACRO SUMMARY -->
+    <div class="card">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px">
+        <div style="display:flex;align-items:baseline;gap:3px">
+          <span class="big-num num-lg">1,672</span>
+          <span style="font-family:var(--body);font-size:10px;color:var(--txt3)"> / 2,200 kcal</span>
+        </div>
+        <span style="font-family:var(--disp);font-size:13px;font-weight:700;color:var(--lime)">528 remaining</span>
+      </div>
+      <div class="bar-track" style="margin-bottom:9px"><div class="bar-fill bf-white" style="width:76%"></div></div>
+      <div class="mp-grid" style="margin-bottom:0">
+        <div class="mp"><div class="mp-v">187g</div><div class="mp-l">Protein / 210</div><div class="mp-b"><div class="mp-f" style="width:89%;background:var(--lime);box-shadow:0 0 4px var(--lime-m)"></div></div></div>
+        <div class="mp"><div class="mp-v">94g</div><div class="mp-l">Carbs / 120</div><div class="mp-b"><div class="mp-f" style="width:78%;background:var(--blue)"></div></div></div>
+        <div class="mp"><div class="mp-v">44g</div><div class="mp-l">Fat / 55</div><div class="mp-b"><div class="mp-f" style="width:80%;background:var(--amber)"></div></div></div>
+        <div class="mp"><div class="mp-v">76g</div><div class="mp-l">Net carbs</div><div class="mp-b"><div class="mp-f" style="width:72%;background:var(--s3)"></div></div></div>
+      </div>
+      <div class="micro-grid">
+        <div class="mi"><div class="mi-l">Sodium</div><div class="mi-v">1,240mg</div><div class="mi-s">/2,300</div></div>
+        <div class="mi"><div class="mi-l">Fiber</div><div class="mi-v">18g</div><div class="mi-s">/38g</div></div>
+        <div class="mi"><div class="mi-l">Sugar</div><div class="mi-v">32g</div><div class="mi-s">/50g</div></div>
+        <div class="mi"><div class="mi-l">Potassium</div><div class="mi-v">2,140</div><div class="mi-s">/3,400mg</div></div>
+      </div>
+    </div>
+
+    <!-- LOG METHODS -->
+    <div class="sec">Log food</div>
+    <div class="log-grid">
+      <div class="lb prime"><span class="lb-icon">▣</span><span class="lb-n">Barcode scan</span><span class="lb-s">Fastest · packaged</span></div>
+      <div class="lb"><span class="lb-icon">📷</span><span class="lb-n">Meal scan AI</span><span class="lb-s">Point at your plate</span></div>
+      <div class="lb"><span class="lb-icon">🎙</span><span class="lb-n">Voice log</span><span class="lb-s">Speak your meal</span></div>
+      <div class="lb"><span class="lb-icon">🔍</span><span class="lb-n">Search food</span><span class="lb-s">20M+ database</span></div>
+    </div>
+
+    <!-- BREAKFAST -->
+    <div class="sec">Breakfast · 8:14 AM</div>
+    <div class="card" style="padding:10px 12px">
+      <div class="meal-hd">
+        <span class="meal-n">642 kcal</span>
+        <div class="meal-m"><span>P 58g</span><span>C 57g</span><span>F 7g</span></div>
+      </div>
+      <div class="fr"><div class="fi"><div class="fn">Egg whites, cooked</div><div class="fd">200g · P 23  C 2  F 0</div></div><span class="fc">104</span><div class="fck done">✓</div></div>
+      <div class="fr"><div class="fi"><div class="fn">Oats, dry</div><div class="fd">80g · P 10  C 52  F 5</div></div><span class="fc">298</span><div class="fck done">✓</div></div>
+      <div class="fr"><div class="fi"><div class="fn">Whey protein shake</div><div class="fd">1 scoop · P 25  C 3  F 2</div></div><span class="fc">130</span><div class="fck done">✓</div></div>
+      <div class="add-r">+ Add to breakfast</div>
+    </div>
+
+    <!-- LUNCH -->
+    <div class="sec">Lunch · 12:42 PM</div>
+    <div class="card" style="padding:10px 12px">
+      <div class="meal-hd">
+        <span class="meal-n">612 kcal</span>
+        <div class="meal-m"><span>P 64g</span><span>C 40g</span><span>F 7g</span></div>
+      </div>
+      <div class="fr"><div class="fi"><div class="fn">Chicken breast, grilled</div><div class="fd">200g · P 60  C 0  F 7</div></div><span class="fc">307</span><div class="fck done">✓</div></div>
+      <div class="fr"><div class="fi"><div class="fn">White rice, cooked</div><div class="fd">150g · P 4  C 40  F 0</div></div><span class="fc">194</span><div class="fck done">✓</div></div>
+      <div class="add-r">+ Add to lunch</div>
+    </div>
+
+    <!-- DINNER -->
+    <div class="sec">Dinner</div>
+    <div class="card" style="padding:10px 12px">
+      <div class="meal-hd">
+        <span class="meal-n">418 kcal</span>
+        <div class="meal-m"><span>P 40g</span><span>C 0g</span><span>F 8g</span></div>
+      </div>
+      <div class="fr"><div class="fi"><div class="fn">96% lean ground beef</div><div class="fd">170g · P 40  C 0  F 8</div></div><span class="fc">240</span><div class="fck done">✓</div></div>
+      <div class="add-r">+ Add to dinner · <span class="c-lime" style="margin-left:2px">528 kcal remaining</span></div>
+    </div>
+
+    <!-- SNACKS -->
+    <div class="sec">Snacks</div>
+    <div class="card" style="padding:10px 12px"><div class="add-r">+ Add snack</div></div>
+
+    <!-- WATER -->
+    <div class="water">
+      <div class="water-l">
+        <span style="font-size:18px">💧</span>
+        <div><div class="water-n">Water</div><div class="water-s">128 oz daily target</div></div>
+      </div>
+      <div class="water-ctrl">
+        <div class="wbtn">−</div>
+        <span class="wval">96 oz</span>
+        <div class="wbtn">+</div>
+      </div>
+    </div>
+
+    <!-- FASTING -->
+    <div class="fast">
+      <div class="fast-h"><span class="fast-l">Fasting · 16:8 · 14h 20m elapsed</span><span class="fast-v">Closes 8 PM</span></div>
+      <div class="bar-track"><div class="bar-fill bf-blue" style="width:68%"></div></div>
+    </div>
+
+  </div>
+  <div class="tb">
+    <div class="tbi"><span class="tbi-icon">⌂</span><span class="tbi-l">Home</span></div>
+    <div class="tbi"><span class="tbi-icon">⚡</span><span class="tbi-l">Train</span></div>
+    <div class="tbi ac"><span class="tbi-icon">◉</span><span class="tbi-l">Nutrition</span></div>
+    <div class="tbi"><span class="tbi-icon">◎</span><span class="tbi-l">Body</span></div>
+    <div class="tbi"><span class="tbi-icon">⬡</span><span class="tbi-l">Labs</span></div>
+  </div>
+</div></div>
+<div class="slbl">Nutrition</div>
+</div>
+
+<!-- ══════════════════════════ BODY ══════════════════════════ -->
+<div class="grp">
+<div class="ph"><div class="sc">
+  <div class="sb"><span class="sb-t">9:41</span><div class="sb-i"><span>●●●</span></div></div>
+  <div class="hd">
+    <span class="ht">Body</span>
+    <div class="pill p-dim" style="margin:0;font-size:9px">8 weeks</div>
+  </div>
+  <div class="s">
+
+    <div class="stat-grid">
+      <div class="stat"><div class="stat-l">Weight</div><div><span class="big-num num-md">168.0</span><span class="num-unit">lbs</span></div><div class="stat-delta c-lime">↓ 0.5 lbs this week</div></div>
+      <div class="stat"><div class="stat-l">Body fat</div><div><span class="big-num num-md">16.2</span><span class="num-unit">%</span></div><div class="stat-delta c-lime">↓ 0.3% this week</div></div>
+      <div class="stat"><div class="stat-l">Lean mass</div><div><span class="big-num num-md">140.8</span><span class="num-unit">lbs</span></div><div class="stat-delta c-blue">→ held this week</div></div>
+      <div class="stat"><div class="stat-l">Fat mass</div><div><span class="big-num num-md">27.2</span><span class="num-unit">lbs</span></div><div class="stat-delta c-lime">↓ 0.8 lbs</div></div>
+    </div>
+
+    <!-- WEIGHT CHART -->
+    <div class="ch-card">
+      <div class="ch-head"><span class="ch-t">Weight trend · 8 wks</span><span class="ch-v c-lime">168.0 lbs</span></div>
+      <div class="chart-area"><svg viewBox="0 0 300 68" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <defs><linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#BDFF00" stop-opacity="0.12"/><stop offset="100%" stop-color="#BDFF00" stop-opacity="0"/></linearGradient></defs>
+        <path d="M0,16 L43,22 L86,30 L129,38 L172,45 L215,51 L258,57 L300,61" fill="none" stroke="#BDFF00" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M0,16 L43,22 L86,30 L129,38 L172,45 L215,51 L258,57 L300,61 L300,68 L0,68Z" fill="url(#g1)"/>
+        <circle cx="300" cy="61" r="3" fill="#BDFF00"/>
+      </svg></div>
+      <div class="ch-ax"><span>8 wks ago</span><span>6 wks</span><span>4 wks</span><span>2 wks</span><span>Today</span></div>
+    </div>
+
+    <!-- BF CHART -->
+    <div class="ch-card">
+      <div class="ch-head"><span class="ch-t">Body fat % · 8 wks</span><span class="ch-v c-blue">16.2%</span></div>
+      <div class="chart-area"><svg viewBox="0 0 300 68" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <defs><linearGradient id="g2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#4DAAFF" stop-opacity="0.12"/><stop offset="100%" stop-color="#4DAAFF" stop-opacity="0"/></linearGradient></defs>
+        <path d="M0,14 L43,20 L86,27 L129,35 L172,42 L215,49 L258,54 L300,59" fill="none" stroke="#4DAAFF" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M0,14 L43,20 L86,27 L129,35 L172,42 L215,49 L258,54 L300,59 L300,68 L0,68Z" fill="url(#g2)"/>
+        <circle cx="300" cy="59" r="3" fill="#4DAAFF"/>
+      </svg></div>
+      <div class="ch-ax"><span>8 wks ago</span><span>6 wks</span><span>4 wks</span><span>2 wks</span><span>Today</span></div>
+    </div>
+
+    <!-- LEAN MASS CHART -->
+    <div class="ch-card">
+      <div class="ch-head"><span class="ch-t">Lean mass · 8 wks</span><span class="ch-v c-amber">140.8 lbs</span></div>
+      <div class="chart-area"><svg viewBox="0 0 300 68" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <defs><linearGradient id="g3" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#F5A623" stop-opacity="0.12"/><stop offset="100%" stop-color="#F5A623" stop-opacity="0"/></linearGradient></defs>
+        <path d="M0,40 L43,38 L86,36 L129,34 L172,32 L215,31 L258,30 L300,29" fill="none" stroke="#F5A623" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M0,40 L43,38 L86,36 L129,34 L172,32 L215,31 L258,30 L300,29 L300,68 L0,68Z" fill="url(#g3)"/>
+        <circle cx="300" cy="29" r="3" fill="#F5A623"/>
+      </svg></div>
+      <div class="ch-ax"><span>8 wks ago</span><span>6 wks</span><span>4 wks</span><span>2 wks</span><span>Today</span></div>
+    </div>
+
+    <!-- HUME -->
+    <div class="sec">Hume Body Pod · today's scan</div>
+    <div class="hume-grid">
+      <div class="hc"><div class="hc-l">Muscle mass</div><div class="hc-v">126.4 lbs</div><div class="hc-s c-dim">↔ held vs last scan</div></div>
+      <div class="hc"><div class="hc-l">Visceral fat</div><div class="hc-v c-amber">Level 6</div><div class="hc-s c-amber" style="opacity:0.6">↓ from 7 last scan</div></div>
+      <div class="hc"><div class="hc-l">Body water</div><div class="hc-v">58.4%</div><div class="hc-s c-dim">Normal range</div></div>
+      <div class="hc"><div class="hc-l">Bone mass</div><div class="hc-v">7.8 lbs</div><div class="hc-s c-dim">↔ stable</div></div>
+      <div class="hc"><div class="hc-l">Soft lean mass</div><div class="hc-v">133.6 lbs</div><div class="hc-s c-lime" style="opacity:0.7">↑ +0.4 vs last scan</div></div>
+      <div class="hc"><div class="hc-l">Waist-hip ratio</div><div class="hc-v">0.84</div><div class="hc-s c-lime" style="opacity:0.7">↓ improving</div></div>
+    </div>
+
+    <!-- APPLE WATCH -->
+    <div class="sec">Apple Watch · this week</div>
+    <div class="stat-grid">
+      <div class="stat"><div class="stat-l">Avg HRV</div><div><span class="big-num num-sm">58</span><span class="num-unit">ms</span></div><div class="stat-delta c-blue">↔ stable</div></div>
+      <div class="stat"><div class="stat-l">Resting HR</div><div><span class="big-num num-sm">54</span><span class="num-unit">bpm</span></div><div class="stat-delta c-lime">↓ 2 bpm</div></div>
+      <div class="stat"><div class="stat-l">Avg sleep</div><div><span class="big-num num-sm">7.4</span><span class="num-unit">hrs</span></div><div class="stat-delta c-lime">↑ 22 min</div></div>
+      <div class="stat"><div class="stat-l">Active cal</div><div><span class="big-num num-sm">612</span><span class="num-unit">/day</span></div><div class="stat-delta c-lime">↑ 8%</div></div>
+    </div>
+
+    <div class="proj">
+      <div>
+        <div class="proj-l">Goal projection</div>
+        <div class="proj-v">165.0 lbs · ~11.8% body fat</div>
+        <div class="proj-s">If lean mass holds at current rate</div>
+      </div>
+      <div class="proj-r">
+        <div class="proj-num">3</div>
+        <span class="proj-unit">weeks away</span>
+      </div>
+    </div>
+
+  </div>
+  <div class="tb">
+    <div class="tbi"><span class="tbi-icon">⌂</span><span class="tbi-l">Home</span></div>
+    <div class="tbi"><span class="tbi-icon">⚡</span><span class="tbi-l">Train</span></div>
+    <div class="tbi"><span class="tbi-icon">◉</span><span class="tbi-l">Nutrition</span></div>
+    <div class="tbi ac"><span class="tbi-icon">◎</span><span class="tbi-l">Body</span></div>
+    <div class="tbi"><span class="tbi-icon">⬡</span><span class="tbi-l">Labs</span></div>
+  </div>
+</div></div>
+<div class="slbl">Body</div>
+</div>
+
+<!-- ══════════════════════════ LABS ══════════════════════════ -->
+<div class="grp">
+<div class="ph"><div class="sc">
+  <div class="sb"><span class="sb-t">9:41</span><div class="sb-i"><span>●●●</span></div></div>
+  <div class="hd"><span class="ht">Labs</span><div class="up-btn"><span>↑</span><span>Upload results</span></div></div>
+  <div class="s">
+
+    <!-- COUNTDOWN -->
+    <div class="cd-card">
+      <div class="cd-h">
+        <span class="cd-title">Next bloodwork due</span>
+        <span class="cd-badge">On schedule</span>
+      </div>
+      <div style="display:flex;align-items:baseline;gap:5px;margin-bottom:3px">
+        <span class="big-num" style="font-size:52px;line-height:1;color:var(--txt)">69</span>
+        <span style="font-family:var(--body);font-size:14px;color:var(--txt3)">days away</span>
+      </div>
+      <div class="cd-sub">Last draw: May 2, 2026 · Next target: July 31, 2026</div>
+      <div class="cd-track"><div class="cd-fill"></div></div>
+      <div class="cd-dates"><span>May 2</span><span>23 of 90 days elapsed</span><span>Jul 31</span></div>
+    </div>
+
+    <!-- Q2 PANEL -->
+    <div class="sec">Most recent · May 2, 2026</div>
+    <div class="q-card">
+      <div class="q-h"><span class="q-t">Q2 2026 panel</span><span class="pill p-lime" style="margin:0;font-size:8px">Most recent</span></div>
+      <div class="bm"><span class="bm-n">Testosterone (total)</span><span class="bm-v c-lime">742 ng/dL</span><span class="bm-t c-lime">↑</span></div>
+      <div class="bm"><span class="bm-n">Free testosterone</span><span class="bm-v c-lime">18.4 pg/mL</span><span class="bm-t c-gray">→</span></div>
+      <div class="bm"><span class="bm-n">Estradiol (E2)</span><span class="bm-v c-amber">38 pg/mL</span><span class="bm-t c-amber">↑</span></div>
+      <div class="bm"><span class="bm-n">IGF-1</span><span class="bm-v c-lime">224 ng/mL</span><span class="bm-t c-lime">↑</span></div>
+      <div class="bm"><span class="bm-n">LDL cholesterol</span><span class="bm-v c-lime">88 mg/dL</span><span class="bm-t c-lime">↓</span></div>
+      <div class="bm"><span class="bm-n">HbA1c</span><span class="bm-v c-lime">5.1%</span><span class="bm-t c-gray">→</span></div>
+      <div class="bm"><span class="bm-n">hsCRP (inflammation)</span><span class="bm-v c-red">2.8 mg/L</span><span class="bm-t c-red">↑ ⚑</span></div>
+      <div class="bm"><span class="bm-n">ALT (liver)</span><span class="bm-v c-lime">24 U/L</span><span class="bm-t c-gray">→</span></div>
+      <div class="bm"><span class="bm-n">Vitamin D</span><span class="bm-v c-lime">62 ng/mL</span><span class="bm-t c-lime">↑</span></div>
+      <div class="bm"><span class="bm-n">Total cholesterol</span><span class="bm-v c-lime">162 mg/dL</span><span class="bm-t c-lime">↓</span></div>
+      <div class="view-all">View all 28 biomarkers →</div>
+    </div>
+
+    <!-- TREND CHART -->
+    <div class="sec">Trend · testosterone · 5 quarters</div>
+    <div class="ch-card">
+      <div class="ch-head"><span class="ch-t">Total testosterone</span><span class="ch-v c-amber">742 ng/dL</span></div>
+      <div class="chart-area"><svg viewBox="0 0 300 68" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+        <defs><linearGradient id="g4" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#F5A623" stop-opacity="0.12"/><stop offset="100%" stop-color="#F5A623" stop-opacity="0"/></linearGradient></defs>
+        <line x1="0" y1="50" x2="300" y2="50" stroke="#2A2A2E" stroke-width="0.5" stroke-dasharray="4,3"/>
+        <text x="3" y="47" fill="#2A2A2E" font-size="7" font-family="Outfit,sans-serif">580 optimal low</text>
+        <path d="M0,56 L75,51 L150,46 L225,41 L300,34" fill="none" stroke="#F5A623" stroke-width="1.5" stroke-linecap="round"/>
+        <path d="M0,56 L75,51 L150,46 L225,41 L300,34 L300,68 L0,68Z" fill="url(#g4)"/>
+        <circle cx="300" cy="34" r="3" fill="#F5A623"/>
+      </svg></div>
+      <div class="ch-ax"><span>Q2 2025</span><span>Q3</span><span>Q4</span><span>Q1 2026</span><span>Q2 2026</span></div>
+    </div>
+
+    <!-- PREVIOUS QUARTERS -->
+    <div class="sec">Previous quarters</div>
+    <div class="q-card">
+      <div class="q-h"><span class="q-t">Q1 2026 · Feb 3</span><span class="pill p-dim" style="margin:0;font-size:8px">Previous</span></div>
+      <div class="bm"><span class="bm-n">Testosterone (total)</span><span class="bm-v c-gray">698 ng/dL</span><span class="bm-t c-dim">→</span></div>
+      <div class="bm"><span class="bm-n">Estradiol (E2)</span><span class="bm-v c-gray">31 pg/mL</span><span class="bm-t c-dim">→</span></div>
+      <div class="bm"><span class="bm-n">hsCRP</span><span class="bm-v c-gray">1.9 mg/L</span><span class="bm-t c-dim">→</span></div>
+      <div class="bm"><span class="bm-n">HbA1c</span><span class="bm-v c-gray">5.2%</span><span class="bm-t c-dim">→</span></div>
+      <div class="view-all">View full Q1 panel →</div>
+    </div>
+
+    <div class="q-card">
+      <div class="q-h"><span class="q-t">Q4 2025 · Nov 14</span><span class="pill p-dim" style="margin:0;font-size:8px">Previous</span></div>
+      <div class="bm"><span class="bm-n">Testosterone (total)</span><span class="bm-v c-gray">671 ng/dL</span><span class="bm-t c-dim">→</span></div>
+      <div class="bm"><span class="bm-n">hsCRP</span><span class="bm-v c-gray">2.1 mg/L</span><span class="bm-t c-dim">→</span></div>
+      <div class="view-all">View full Q4 panel →</div>
+    </div>
+
+  </div>
+  <div class="tb">
+    <div class="tbi"><span class="tbi-icon">⌂</span><span class="tbi-l">Home</span></div>
+    <div class="tbi"><span class="tbi-icon">⚡</span><span class="tbi-l">Train</span></div>
+    <div class="tbi"><span class="tbi-icon">◉</span><span class="tbi-l">Nutrition</span></div>
+    <div class="tbi"><span class="tbi-icon">◎</span><span class="tbi-l">Body</span></div>
+    <div class="tbi ac"><span class="tbi-icon">⬡</span><span class="tbi-l">Labs</span></div>
+  </div>
+</div></div>
+<div class="slbl">Labs</div>
+</div>
+
+</body>
+</html>
