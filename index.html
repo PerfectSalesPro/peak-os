@@ -45,6 +45,20 @@
             <p class="placeholder-sub">Morning weigh-in, macro bars, verdict, and peptide checklist — Stage 3, 6, 7 &amp; 8.</p>
           </div>
         </div>
+        <div class="card" style="animation-delay:80ms">
+          <div class="card-header">
+            <span class="card-title">DATA</span>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px;padding-top:4px;">
+            <button id="btn-export-db" class="action-btn" style="width:100%">
+              ⬇ Export All Data
+            </button>
+            <label id="btn-import-db" class="action-btn" style="width:100%;text-align:center;cursor:pointer">
+              ⬆ Import Data
+              <input type="file" id="import-file-input" accept=".json" style="display:none">
+            </label>
+          </div>
+        </div>
       </section>
 
       <!-- TRAIN — Stage 4: training tracker (JS-rendered by training-tracker.js) -->

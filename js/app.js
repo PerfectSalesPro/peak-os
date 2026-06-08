@@ -164,3 +164,34 @@ window.peakDebugVolume = async function(rangeDays = 7) {
 
   return { weekWorkouts: weekWorkouts.length, byMuscle };
 };
+
+// ── Data export / import ──────────────────────────────────────────────────────
+
+document.getElementById('btn-export-db')?.addEventListener('click', async () => {
+  try {
+    const json = await db.exportDB();
+    const blob = new Blob([json], { type: 'application/json' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href     = url;
+    a.download = `peak-os-backup-${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('Data exported ✓', 'lime');
+  } catch (err) {
+    showToast('Export failed: ' + err.message, 'red');
+  }
+});
+
+document.getElementById('import-file-input')?.addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  try {
+    const text = await file.text();
+    await db.importDB(text);
+    showToast('Data imported ✓ — reloading…', 'lime');
+    setTimeout(() => location.reload(), 1500);
+  } catch (err) {
+    showToast('Import failed: ' + err.message, 'red');
+  }
+});
