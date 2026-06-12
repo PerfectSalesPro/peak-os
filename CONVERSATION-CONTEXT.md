@@ -15,7 +15,7 @@
 - PWA only (no backend, no accounts, no Supabase)
 - Data storage: IndexedDB on device, JSON export/import for backup
 - Apple Health sync: iOS Shortcut pushes peakos.health.v1 JSON payload via URL ?import= parameter (zero-touch, runs at 8:15 AM daily)
-- Hosting: GitHub Pages (to be set up — repo not created yet)
+- Hosting: GitHub Pages — LIVE at perfectsalespro.github.io/peak-os/
 - No BW toggle on analytics (removed — not useful for this user)
 - Design: "Precision Instrument" aesthetic — electric lime #BDFF00 on near-black, Barlow Condensed 800 for numbers, Outfit for body text
 - Units: Imperial (lbs, oz)
@@ -45,6 +45,7 @@
 - Stage 3: Done (Body composition dashboard, charts, Hume metrics, Apple Watch stats, projection strip)
 - Stage 4: Done (Training tracker, templates, live workout, rest timer, PR detection, plate/warmup calc, Strong CSV import)
 - Stage 5: Done (Analytics, 1RM charts, volume trends, muscle heat map, consistency calendar, exercise browser, range selector 1W/1M/3M/6M/1Y/All)
+- History deletion: Done (swipe-left-to-delete on history cards + trash button in session detail view, both with confirm bottom sheet; workout ids are string UUIDs — never coerce to number)
 - Stage 6: Todo — NEXT (Nutrition logger: food diary, barcode scanner, carb cycling, water, fasting)
 - Stage 7: Todo (Peptide tracker)
 - Stage 8: Todo (Decision engine + weekly verdict)
@@ -54,10 +55,13 @@
 - Needs density upgrade to match Strong: set numbers visible, previous weight x reps as visible label, volume total per exercise, green row highlight on completion, per-exercise notes field, tighter rows
 - Prompt to use when ready: "The live workout screen needs to more closely match the Strong app UI. Make these changes: 1) Show set numbers (1,2,3..) on left of each row. 2) Show previous session weight x reps as a visible label on each row. 3) Show running volume total per exercise. 4) Make completed set rows visually distinct with green highlight. 5) Add per-exercise notes field. 6) Make set rows more compact. Keep design tokens."
 
-## GitHub Pages — not set up yet
-- Repo name: peak-os
-- Command sequence when ready: cd ~/Desktop/peak-os && git init && git add . && git commit -m "Stages 0-5 complete" && git remote add origin https://github.com/YOURUSERNAME/peak-os.git && git push -u origin main
-- Then enable Pages in repo Settings → Pages → main branch
+## GitHub Pages — LIVE
+- Repo: github.com/PerfectSalesPro/peak-os
+- Live URL: perfectsalespro.github.io/peak-os/
+- PWA installed on iPhone
+- Workflow: after changes, bump SW cache version, commit, push
+- iPhone needs full close + reopen twice to pick up new service worker
+- App code syncs via GitHub; DATA does not — IndexedDB is per-device, moved via the Export/Import card on Home
 
 ## Peptide protocol (for Stage 7)
 - BPC-157: 250mcg SubQ, lower abdomen, AM
