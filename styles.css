@@ -1945,6 +1945,47 @@ button {
   gap: 1px;
 }
 
+/* ── Swipe-to-delete wrapper ── */
+.hist-item {
+  position: relative;
+  overflow: hidden;
+}
+
+.hist-delete-bg {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 76px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #FF525215;
+  border-bottom: 0.5px solid var(--b1);
+}
+
+.hist-delete-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: var(--red);
+  font-family: var(--body);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.hist-delete-btn:active { opacity: 0.6; }
+
 .hist-card {
   display: flex;
   align-items: center;
@@ -1952,14 +1993,98 @@ button {
   width: 100%;
   padding: 12px 0;
   border-bottom: 0.5px solid var(--b1);
-  background: transparent;
+  background: var(--bg);
   text-align: left;
-  animation: fadeUp 0.3s ease both;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
+  will-change: transform;
 }
 .hist-card:active { opacity: 0.75; }
 .hist-card:focus-visible { outline: 2px solid var(--lime); border-radius: var(--r-sm); }
+
+/* ── Delete confirm bottom sheet ── */
+.delete-confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: flex-end;
+  z-index: 200;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 220ms ease;
+}
+.delete-confirm-overlay--show {
+  opacity: 1;
+  pointer-events: auto;
+}
+.delete-confirm-sheet {
+  width: 100%;
+  background: var(--s2);
+  border-top: 0.5px solid var(--b1);
+  border-radius: 16px 16px 0 0;
+  padding: 16px 20px 40px;
+  transform: translateY(100%);
+  transition: transform 250ms var(--ease-out);
+}
+.delete-confirm-overlay--show .delete-confirm-sheet {
+  transform: translateY(0);
+}
+.delete-confirm-handle {
+  width: 36px;
+  height: 4px;
+  background: var(--b1);
+  border-radius: 2px;
+  margin: 0 auto 20px;
+}
+.delete-confirm-title {
+  font-family: var(--disp);
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--txt);
+  text-align: center;
+  margin-bottom: 6px;
+}
+.delete-confirm-body {
+  font-family: var(--body);
+  font-size: 13px;
+  text-align: center;
+  margin-bottom: 24px;
+}
+.delete-confirm-actions {
+  display: flex;
+  gap: 10px;
+}
+.delete-confirm-cancel-btn {
+  flex: 1;
+  font-family: var(--body);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--txt2);
+  background: var(--s3);
+  border: 0.5px solid var(--b1);
+  border-radius: var(--r-pill);
+  padding: 13px;
+  cursor: pointer;
+  min-height: 48px;
+  -webkit-tap-highlight-color: transparent;
+}
+.delete-confirm-cancel-btn:active { opacity: 0.7; }
+.delete-confirm-delete-btn {
+  flex: 1;
+  font-family: var(--body);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--red);
+  background: var(--red-d);
+  border: 0.5px solid #FF525230;
+  border-radius: var(--r-pill);
+  padding: 13px;
+  cursor: pointer;
+  min-height: 48px;
+  -webkit-tap-highlight-color: transparent;
+}
+.delete-confirm-delete-btn:active { opacity: 0.7; }
 
 .hist-card-left {
   flex: 1;
@@ -2038,6 +2163,24 @@ button {
 }
 .btn-repeat-session:active { opacity: 0.75; }
 .btn-repeat-session:focus-visible { outline: 2px solid var(--lime); outline-offset: 2px; }
+
+.session-detail-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.btn-delete-session {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--r-pill);
+  cursor: pointer;
+  transition: opacity 150ms;
+  -webkit-tap-highlight-color: transparent;
+}
+.btn-delete-session:active { opacity: 0.75; }
+.btn-delete-session:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
 
 .session-detail-meta {
   margin-bottom: 8px;

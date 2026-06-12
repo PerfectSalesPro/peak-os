@@ -1,4 +1,7 @@
 {
   "type": "module",
-  "private": true
+  "private": true,
+  "devDependencies": {
+    "fake-indexeddb": "^6.2.5"
+  }
 }

@@ -30,6 +30,8 @@ let _pickerCreateMode = false;
 let _pickerCreateForm = { name: '', muscle: 'Chest', equip: 'Barbell' };
 let _history        = [];   // cached finished workouts (sorted desc)
 let _historyWorkout = null; // workout being viewed in detail
+let _openSwipeCard  = null; // currently revealed hist-card element
+let _pendingDeleteId = null; // workout id awaiting confirm
 
 // ── Init ──────────────────────────────────────────────────────────────────────
 
@@ -75,8 +77,11 @@ function _onClick(e) {
     case 'show-history':    _navHistory(); break;
     case 'home-cal-prev':   _calMonth--; if (_calMonth < 0) { _calMonth = 11; _calYear--; } _render(); break;
     case 'home-cal-next':   _calMonth++; if (_calMonth > 11) { _calMonth = 0; _calYear++; } _render(); break;
-    case 'view-session':  _viewSession(btn.dataset.id); break;
-    case 'back-history':  _view = 'history'; _render(); break;
+    case 'view-session':         _viewSession(btn.dataset.id); break;
+    case 'back-history':         _view = 'history'; _render(); break;
+    case 'delete-workout':       _confirmDeleteWorkout(btn.dataset.id); break;
+    case 'confirm-delete-yes':   _deleteWorkout(_pendingDeleteId); break;
+    case 'confirm-delete-cancel':_closeDeleteConfirm(); break;
 
     // ── Active workout ──
     case 'finish-workout': _finishWorkout(); break;
@@ -178,7 +183,7 @@ function _render() {
     case 'calcs':          root.innerHTML = _calcsHTML();          break;
     case 'csv':            root.innerHTML = _csvHTML();            break;
     case 'picker':         root.innerHTML = _pickerHTML();         break;
-    case 'history':        root.innerHTML = _historyHTML();        break;
+    case 'history':        root.innerHTML = _historyHTML(); _attachHistorySwipe(); break;
     case 'session-detail': root.innerHTML = _sessionDetailHTML();  break;
   }
 }
@@ -1368,11 +1373,141 @@ function _calcWarmup() {
 // WORKOUT HISTORY
 // ─────────────────────────────────────────────────────────────────────────────
 
+// ── History swipe-to-delete ───────────────────────────────────────────────────
+
+function _attachHistorySwipe() {
+  const DELETE_W  = 76;
+  const THRESHOLD = 28;
+
+  document.querySelectorAll('#train-root .hist-item').forEach(item => {
+    const card = item.querySelector('.hist-card');
+    if (!card) return;
+
+    let startX = 0, startY = 0, dragging = false, currentDx = 0;
+
+    function isOpen() { return card.classList.contains('hist-card--open'); }
+
+    function snapTo(x, instant = false) {
+      card.style.transition = instant ? 'none' : 'transform 220ms cubic-bezier(0.25, 0.8, 0.25, 1)';
+      card.style.transform  = `translateX(${x}px)`;
+      if (x < -10) {
+        card.classList.add('hist-card--open');
+        _openSwipeCard = card;
+      } else {
+        card.classList.remove('hist-card--open');
+        if (_openSwipeCard === card) _openSwipeCard = null;
+      }
+    }
+
+    card.addEventListener('touchstart', e => {
+      // Close any other open card first
+      if (_openSwipeCard && _openSwipeCard !== card) {
+        const prev = _openSwipeCard;
+        prev.style.transition = 'transform 220ms cubic-bezier(0.25, 0.8, 0.25, 1)';
+        prev.style.transform  = 'translateX(0)';
+        prev.classList.remove('hist-card--open');
+        _openSwipeCard = null;
+      }
+      startX = e.touches[0].clientX;
+      startY = e.touches[0].clientY;
+      dragging  = false;
+      currentDx = 0;
+      card.style.transition = 'none';
+    }, { passive: true });
+
+    card.addEventListener('touchmove', e => {
+      const dx = e.touches[0].clientX - startX;
+      const dy = e.touches[0].clientY - startY;
+      if (!dragging) {
+        if (Math.abs(dy) > Math.abs(dx)) return; // vertical wins
+        if (Math.abs(dx) > 6) dragging = true;
+      }
+      if (!dragging) return;
+      currentDx = dx;
+      const base    = isOpen() ? -DELETE_W : 0;
+      const clamped = Math.max(-DELETE_W, Math.min(0, base + dx));
+      card.style.transform = `translateX(${clamped}px)`;
+    }, { passive: true });
+
+    card.addEventListener('touchend', () => {
+      if (!dragging) return;
+      dragging = false;
+      const base  = isOpen() ? -DELETE_W : 0;
+      const final = Math.max(-DELETE_W, Math.min(0, base + currentDx));
+      if (!isOpen() && final < -THRESHOLD)          snapTo(-DELETE_W);
+      else if (isOpen() && final > -(DELETE_W - THRESHOLD)) snapTo(0);
+      else if (isOpen())                             snapTo(-DELETE_W);
+      else                                           snapTo(0);
+    });
+
+    // Suppress navigation tap when card is open; snap it shut instead
+    card.addEventListener('click', e => {
+      if (isOpen()) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        snapTo(0);
+      }
+    });
+  });
+}
+
+function _confirmDeleteWorkout(id) {
+  _pendingDeleteId = id;
+  // Snap open card shut before showing modal
+  if (_openSwipeCard) {
+    _openSwipeCard.style.transition = 'transform 220ms cubic-bezier(0.25, 0.8, 0.25, 1)';
+    _openSwipeCard.style.transform  = 'translateX(0)';
+    _openSwipeCard.classList.remove('hist-card--open');
+    _openSwipeCard = null;
+  }
+  document.getElementById('delete-confirm-modal')?.remove();
+  const modal = document.createElement('div');
+  modal.id        = 'delete-confirm-modal';
+  modal.className = 'delete-confirm-overlay';
+  modal.innerHTML = `
+    <div class="delete-confirm-sheet">
+      <div class="delete-confirm-handle"></div>
+      <div class="delete-confirm-title">Delete Workout?</div>
+      <div class="delete-confirm-body sec">This cannot be undone.</div>
+      <div class="delete-confirm-actions">
+        <button class="delete-confirm-cancel-btn" data-action="confirm-delete-cancel">Cancel</button>
+        <button class="delete-confirm-delete-btn" data-action="confirm-delete-yes">Delete</button>
+      </div>
+    </div>`;
+  document.getElementById('screen-train').appendChild(modal);
+  requestAnimationFrame(() => modal.classList.add('delete-confirm-overlay--show'));
+}
+
+function _closeDeleteConfirm() {
+  const modal = document.getElementById('delete-confirm-modal');
+  if (!modal) return;
+  modal.classList.remove('delete-confirm-overlay--show');
+  modal.addEventListener('transitionend', () => modal.remove(), { once: true });
+  _pendingDeleteId = null;
+}
+
+async function _deleteWorkout(id) {
+  _closeDeleteConfirm();
+  // Workout ids are string UUIDs assigned by db.put — never coerce to number.
+  if (typeof id !== 'string' || !id) {
+    console.warn('[training-tracker] _deleteWorkout aborted: invalid workout id', id);
+    return;
+  }
+  await db.remove('workouts', id);
+  _history       = _history.filter(w => w.id !== id);
+  _openSwipeCard = null;
+  if (_view === 'session-detail') {
+    _historyWorkout = null;
+    _view = 'history';
+  }
+  _render();
+}
+
 async function _navHistory() {
   const all = await db.getAll('workouts');
   _history = all
     .filter(w => w.durationSec != null)
-    .sort((a, b) => b.date.localeCompare(a.date) || b.id - a.id);
+    .sort((a, b) => b.date.localeCompare(a.date) || String(b.id).localeCompare(String(a.id)));
   _view = 'history';
   _render();
 }
@@ -1403,21 +1538,31 @@ function _historyHTML() {
     const vol   = _workoutVolume(w);
     const exCnt = (w.exercises || []).length;
     return `
-      <button class="hist-card" data-action="view-session" data-id="${w.id}"
-        style="animation-delay:${delay * 20}ms" aria-label="View ${_esc(w.name)}">
-        <div class="hist-card-left">
-          <div class="hist-date">${_fmtHistDate(w.date)}</div>
-          <div class="hist-name">${_esc(w.name)}</div>
-          <div class="hist-meta">${_fmtDurShort(w.durationSec)} · ${exCnt} exercise${exCnt !== 1 ? 's' : ''}</div>
+      <div class="hist-item" style="animation:fadeUp 0.3s ease both;animation-delay:${delay * 20}ms">
+        <div class="hist-delete-bg">
+          <button class="hist-delete-btn" data-action="delete-workout" data-id="${w.id}" aria-label="Delete ${_esc(w.name)}">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/>
+            </svg>
+            Delete
+          </button>
         </div>
-        <div class="hist-card-right">
-          <div class="hist-vol">${_fmtVol(vol)}</div>
-          <div class="hist-vol-unit sec">lbs</div>
-          <svg class="hist-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
-            <polyline points="9 18 15 12 9 6"/>
-          </svg>
-        </div>
-      </button>`;
+        <button class="hist-card" data-action="view-session" data-id="${w.id}"
+          aria-label="View ${_esc(w.name)}">
+          <div class="hist-card-left">
+            <div class="hist-date">${_fmtHistDate(w.date)}</div>
+            <div class="hist-name">${_esc(w.name)}</div>
+            <div class="hist-meta">${_fmtDurShort(w.durationSec)} · ${exCnt} exercise${exCnt !== 1 ? 's' : ''}</div>
+          </div>
+          <div class="hist-card-right">
+            <div class="hist-vol">${_fmtVol(vol)}</div>
+            <div class="hist-vol-unit sec">lbs</div>
+            <svg class="hist-chevron" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+              <polyline points="9 18 15 12 9 6"/>
+            </svg>
+          </div>
+        </button>
+      </div>`;
   }).join('');
 
   return `
@@ -1451,8 +1596,17 @@ function _sessionDetailHTML() {
           </svg>
         </button>
         <span class="section-label" style="font-size:14px">${_esc(w.name)}</span>
-        <button class="btn-repeat-session" data-action="repeat-workout" data-id="${w.id}"
-          aria-label="Repeat this workout">Repeat</button>
+        <div class="session-detail-actions">
+          <button class="btn-repeat-session" data-action="repeat-workout" data-id="${w.id}"
+            aria-label="Repeat this workout">Repeat</button>
+          <button class="btn-icon-sm btn-icon-danger btn-delete-session" data-action="delete-workout" data-id="${w.id}"
+            aria-label="Delete this workout">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true">
+              <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+              <path d="M10 11v6"/><path d="M14 11v6"/>
+            </svg>
+          </button>
+        </div>
       </div>
 
       <div class="session-detail-meta card" style="animation-delay:0ms">
