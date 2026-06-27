@@ -57,6 +57,7 @@ let _addSlot   = 'breakfast';
 let _searchResults = [];
 let _searchBusy    = false;
 let _searchError   = false;     // true only when remote lookup failed AND nothing to show
+let _emptyMsg      = 'No results yet.';  // results-area empty copy (overridden to "Product not found" for barcode)
 let _svState       = {};        // per-result serving control: i → { amount, unit }
 let _detailFood    = null;      // food open in the detail screen
 let _detail        = null;      // { slot, amount, unit, qty }
@@ -66,6 +67,7 @@ let _scanItems     = [];        // review list from photo scan
 let _scanImage     = null;      // { dataUrl, mediaType, b64 }
 let _recog         = null;      // SpeechRecognition instance
 let _cam           = null;      // { stream, reader, raf }
+let _decoding      = false;     // guards the post-scan transition against double-detection
 let _fastTickId    = null;
 let _activeFast    = null;      // open fasting session record (cached)
 
@@ -519,6 +521,7 @@ async function _runSearch() {
   _svState = {};
   const token = ++_searchToken;     // every call supersedes any in-flight one
   _loadingToast?.dismissToast?.(); _loadingToast = null;   // drop any stale background-retry toast
+  _emptyMsg = 'No results yet.';
   if (q.length < 2) { _searchResults = []; _searchError = false; _searchBusy = false; _fillResults(); return; }
 
   _searchBusy = true; _searchError = false; _searchResults = []; _fillResults();
@@ -718,7 +721,7 @@ function _resultsHTML() {
         <button class="nu-chip nu-chip--lime" style="width:100%;margin-top:8px" data-action="nu-search-run">Retry</button>
       </div>`;
   }
-  if (!_searchResults.length) return `<div class="card"><p class="nu-empty">No results yet.</p></div>`;
+  if (!_searchResults.length) return `<div class="card"><p class="nu-empty">${_emptyMsg}</p></div>`;
   return `<div class="card nu-list">${_searchResults.map((f, i) => _resultRow(f, i)).join('')}</div>`;
 }
 
@@ -1134,28 +1137,44 @@ function _barcodePanel() {
     <div id="nu-results">${_resultsHTML()}</div>`;
 }
 
-async function _barcodeLookup(code) {
+async function _barcodeLookup(code, fromScan = false) {
   const bc = code || (document.getElementById('nu-barcode-input')?.value || '').trim();
   if (!bc) return;
   _svState = {};
   _searchError = false;
+  _emptyMsg = 'No results yet.';
   _searchBusy = true; _fillResults();
+  let ok = false;
   try {
     const url = `https://world.openfoodfacts.org/api/v2/product/${encodeURIComponent(bc)}.json?fields=${OFF_FIELDS}`;
-    const res = await fetch(url);
+    const res = await _fetchTimeout(url);
     const data = await res.json();
     if (data.status === 1 && data.product) {
       const f = _foodFromOFF(data.product);
       _searchResults = f ? [f] : [];
-      if (!f) _toast('Product has no nutrition data', 'amber');
+      if (f) ok = true;
+      else _emptyMsg = 'Product has no nutrition data';
     } else {
       _searchResults = [];
-      _toast('Barcode not found in Open Food Facts', 'amber');
+      _emptyMsg = 'Product not found';   // shown in the results area, not a flicker back to camera
     }
   } catch (err) {
-    console.warn(err); _searchResults = []; _toast('Lookup failed — check connection', 'red');
+    console.warn('[Peak OS] barcode lookup failed', err);
+    _searchResults = [];
+    _emptyMsg = 'Lookup failed — check connection';
+    _toast('Lookup failed — check connection', 'red');
   }
   _searchBusy = false; _fillResults();
+  if (ok) _slideInResults();   // slide the product card up from below, like search results
+}
+
+// Restart the slide-up animation on the freshly rendered result card.
+function _slideInResults() {
+  const card = document.querySelector('#nu-results .card');
+  if (!card) return;
+  card.classList.remove('nu-slide-in');
+  void card.offsetWidth;       // force reflow so the animation replays
+  card.classList.add('nu-slide-in');
 }
 
 async function _startCamera() {
@@ -1202,22 +1221,63 @@ async function _startCamera() {
   }
 }
 
-function _onBarcodeDecoded(code) {
-  _stopCamera();
+async function _onBarcodeDecoded(code) {
+  if (_decoding) return;           // ignore repeat detections during the transition
+  _decoding = true;
+
   const inp = document.getElementById('nu-barcode-input');
   if (inp) inp.value = code;
   _toast('Scanned ' + code, 'lime');
-  _barcodeLookup(code);
+
+  // 1) Stop the camera stream completely and wait for it to fully release before touching the DOM.
+  _teardownCam();
+  await _camClosed();
+
+  // 2) Fade the now-inert camera view out over 150ms, then remove it — no jarring flash.
+  const wrap = document.getElementById('nu-cam-wrap');
+  if (wrap) {
+    wrap.style.transition = 'opacity 150ms ease';
+    wrap.style.opacity = '0';
+    await _sleep(150);
+    wrap.innerHTML = '';
+    wrap.style.opacity = '';
+    wrap.style.transition = '';
+  }
+
+  // 3/4) Look up: success slides the card in, failure shows "Product not found" in place.
+  await _barcodeLookup(code, /*fromScan*/ true);
+  _decoding = false;
 }
 
-function _stopCamera() {
+// Stop scanning and release the camera tracks. Leaves the wrap DOM intact so the caller can
+// fade it out before clearing. track.stop() is synchronous; _camClosed() waits for the device
+// and last painted frame to actually release.
+function _teardownCam() {
   if (!_cam) return;
   try { _cam.raf && cancelAnimationFrame(_cam.raf); } catch (_) {}
   try { _cam.reader && _cam.reader.reset(); } catch (_) {}
+  const video = document.getElementById('nu-video');
+  if (video) { try { video.pause(); } catch (_) {} video.srcObject = null; }
   try { _cam.stream && _cam.stream.getTracks().forEach(t => t.stop()); } catch (_) {}
   _cam = null;
+}
+
+// Wait for the stopped stream's device + last painted frame to fully release before we mutate
+// the DOM, preventing a flash on teardown. Two animation frames normally; a 100ms timeout is a
+// fallback in case rAF is throttled (e.g. the page is hidden), so the transition can't stall.
+function _camClosed() {
+  return new Promise(resolve => {
+    let done = false;
+    const finish = () => { if (!done) { done = true; resolve(); } };
+    requestAnimationFrame(() => requestAnimationFrame(finish));
+    setTimeout(finish, 100);
+  });
+}
+
+function _stopCamera() {           // synchronous teardown for panel/view changes
+  _teardownCam();
   const wrap = document.getElementById('nu-cam-wrap');
-  if (wrap) wrap.innerHTML = '';
+  if (wrap) { wrap.innerHTML = ''; wrap.style.opacity = ''; wrap.style.transition = ''; }
 }
 
 // ── Voice ──────────────────────────────────────────────────────────────────────

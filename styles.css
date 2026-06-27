@@ -365,6 +365,12 @@ button {
   .bar-fill {
     transition: none;
   }
+  .nu-slide-in {
+    animation: none;
+  }
+  #nu-cam-wrap {
+    transition: none;
+  }
 }
 
 /* ================================================================
@@ -3304,6 +3310,14 @@ button {
   width: 100%; border-radius: var(--r-md); background: #000;
   aspect-ratio: 4 / 3; object-fit: cover;
 }
+#nu-cam-wrap { transition: opacity 150ms ease; }
+
+/* Post-scan: slide the product card up from below, like search results */
+@keyframes nu-slide-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.nu-slide-in { animation: nu-slide-up 0.3s ease both; }
 
 /* Photo scan */
 .nu-file-label {
