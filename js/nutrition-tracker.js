@@ -68,6 +68,7 @@ let _scanImage     = null;      // { dataUrl, mediaType, b64 }
 let _recog         = null;      // SpeechRecognition instance
 let _cam           = null;      // { stream, reader, raf }
 let _decoding      = false;     // guards the post-scan transition against double-detection
+let _scanDone      = false;     // locks the scanner after a hit until rescan / method switch
 let _fastTickId    = null;
 let _activeFast    = null;      // open fasting session record (cached)
 
@@ -487,6 +488,7 @@ function _renderAdd() {
 function _renderMethodPanel() {
   const el = document.getElementById('nu-method-panel');
   if (!el) return;
+  _scanDone = false;   // switching into / re-rendering a method re-arms barcode scanning
   switch (_addMethod) {
     case 'search':    el.innerHTML = _searchPanel();    break;
     case 'barcode':   el.innerHTML = _barcodePanel();   break;
@@ -1140,6 +1142,8 @@ function _barcodePanel() {
 async function _barcodeLookup(code) {
   const bc = code || (document.getElementById('nu-barcode-input')?.value || '').trim();
   if (!bc) return;
+  const token = ++_searchToken;                          // cancel any pending text-search retry
+  _loadingToast?.dismissToast?.(); _loadingToast = null;  // and its sticky "Loading more results…" toast
   _svState = {};
   _searchError = false;
   _emptyMsg = 'No results yet.';
@@ -1162,8 +1166,11 @@ async function _barcodeLookup(code) {
     } catch (err) { console.warn('[Peak OS] Open Food Facts barcode lookup failed', err); hadError = true; }
   }
 
+  if (token !== _searchToken) return;   // a newer search/scan superseded this lookup
+
   if (food) {
     _searchResults = [food];
+    _scanDone = true;              // lock the scanner — the result stays put until rescan / method switch
   } else {
     _searchResults = [];
     if (hadError)            { _emptyMsg = 'Lookup failed — check connection'; _toast('Lookup failed — check connection', 'red'); }
@@ -1212,6 +1219,7 @@ function _slideInResults() {
 async function _startCamera() {
   const wrap = document.getElementById('nu-cam-wrap');
   if (!wrap) return;
+  _scanDone = false;               // fresh scan session — re-arm the scanner
   wrap.innerHTML = `
     <div class="nu-cam">
       <video id="nu-video" playsinline muted></video>
@@ -1220,19 +1228,19 @@ async function _startCamera() {
   const video = document.getElementById('nu-video');
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
-    _cam = { stream, reader: null, raf: null };
+    _cam = { stream, reader: null, controls: null, raf: null };
     video.srcObject = stream;
     await video.play();
 
     if ('BarcodeDetector' in window) {
       const detector = new window.BarcodeDetector({ formats: ['ean_13', 'ean_8', 'upc_a', 'upc_e', 'code_128'] });
       const scan = async () => {
-        if (!_cam) return;
+        if (!_cam || _scanDone) return;
         try {
           const codes = await detector.detect(video);
           if (codes.length) { _onBarcodeDecoded(codes[0].rawValue); return; }
         } catch (_) {}
-        _cam.raf = requestAnimationFrame(scan);
+        if (_cam) _cam.raf = requestAnimationFrame(scan);
       };
       _cam.raf = requestAnimationFrame(scan);
     } else {
@@ -1241,7 +1249,11 @@ async function _startCamera() {
         const mod = await import('https://esm.run/@zxing/browser');
         const reader = new mod.BrowserMultiFormatReader();
         _cam.reader = reader;
-        reader.decodeFromVideoElement(video, (result) => { if (result) _onBarcodeDecoded(result.getText()); });
+        // decodeFromVideoElement resolves to IScannerControls in @zxing/browser; keep it so
+        // we can actually stop the scan (this build has no reader.reset()).
+        const controls = await reader.decodeFromVideoElement(video, (result) => { if (result) _onBarcodeDecoded(result.getText()); });
+        if (_cam) _cam.controls = controls;
+        else { try { controls && controls.stop(); } catch (_) {} }   // torn down mid-await
       } catch (err) {
         console.warn('[Peak OS] ZXing load failed', err);
         wrap.insertAdjacentHTML('beforeend', `<p class="card-hint" style="color:var(--amber)">Live scanning isn't available here — type the barcode number above instead.</p>`);
@@ -1254,7 +1266,7 @@ async function _startCamera() {
 }
 
 async function _onBarcodeDecoded(code) {
-  if (_decoding) return;           // ignore repeat detections during the transition
+  if (_decoding || _scanDone) return;   // mid-transition, or already locked on a prior hit
   _decoding = true;
 
   const inp = document.getElementById('nu-barcode-input');
@@ -1287,7 +1299,8 @@ async function _onBarcodeDecoded(code) {
 function _teardownCam() {
   if (!_cam) return;
   try { _cam.raf && cancelAnimationFrame(_cam.raf); } catch (_) {}
-  try { _cam.reader && _cam.reader.reset(); } catch (_) {}
+  try { _cam.controls && _cam.controls.stop(); } catch (_) {}                 // @zxing/browser: real stop
+  try { _cam.reader && _cam.reader.reset && _cam.reader.reset(); } catch (_) {} // @zxing/library fallback
   const video = document.getElementById('nu-video');
   if (video) { try { video.pause(); } catch (_) {} video.srcObject = null; }
   try { _cam.stream && _cam.stream.getTracks().forEach(t => t.stop()); } catch (_) {}

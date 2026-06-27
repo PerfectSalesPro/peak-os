@@ -1,4 +1,4 @@
-const CACHE = 'peak-os-v21';
+const CACHE = 'peak-os-v22';
 const SHELL = [
   './',
   './index.html',
