@@ -1130,42 +1130,74 @@ function _barcodePanel() {
         <input id="nu-barcode-input" class="field-input" placeholder="Enter barcode number" inputmode="numeric" autocomplete="off" aria-label="Barcode">
         <button class="nu-chip nu-chip--lime" data-action="nu-barcode-lookup">Look up</button>
       </div>
-      <p class="card-hint">Type the number, or scan with the camera below.</p>
+      <p class="card-hint">${_settings.usdaApiKey ? 'Checks USDA, then Open Food Facts.' : 'Looks up Open Food Facts.'} Type the number, or scan with the camera below.</p>
       <button class="btn-primary" style="margin-top:8px" data-action="nu-scan-start">📷 Scan with camera</button>
       <div id="nu-cam-wrap"></div>
     </div>
     <div id="nu-results">${_resultsHTML()}</div>`;
 }
 
-async function _barcodeLookup(code, fromScan = false) {
+async function _barcodeLookup(code) {
   const bc = code || (document.getElementById('nu-barcode-input')?.value || '').trim();
   if (!bc) return;
   _svState = {};
   _searchError = false;
   _emptyMsg = 'No results yet.';
   _searchBusy = true; _fillResults();
-  let ok = false;
-  try {
-    const url = `https://world.openfoodfacts.org/api/v2/product/${encodeURIComponent(bc)}.json?fields=${OFF_FIELDS}`;
-    const res = await _fetchTimeout(url);
-    const data = await res.json();
-    if (data.status === 1 && data.product) {
-      const f = _foodFromOFF(data.product);
-      _searchResults = f ? [f] : [];
-      if (f) ok = true;
-      else _emptyMsg = 'Product has no nutrition data';
-    } else {
-      _searchResults = [];
-      _emptyMsg = 'Product not found';   // shown in the results area, not a flicker back to camera
-    }
-  } catch (err) {
-    console.warn('[Peak OS] barcode lookup failed', err);
+
+  // USDA first (by UPC) when a key is set — stronger branded coverage — then fall
+  // back to Open Food Facts. (FatSecret would be ideal here but is unreachable from
+  // a browser: CORS-blocked + server-side IP allowlisting, so it can't run in a PWA.)
+  let food = null, offNoNutrition = false, hadError = false;
+
+  if (_settings.usdaApiKey) {
+    try { food = await _barcodeLookupUSDA(bc); }
+    catch (err) { console.warn('[Peak OS] USDA barcode lookup failed', err); hadError = true; }
+  }
+  if (!food) {
+    try {
+      const r = await _barcodeLookupOFF(bc);
+      if (r === 'no-nutrition') offNoNutrition = true;
+      else if (r) { food = r; hadError = false; }   // OFF succeeding clears a USDA network blip
+    } catch (err) { console.warn('[Peak OS] Open Food Facts barcode lookup failed', err); hadError = true; }
+  }
+
+  if (food) {
+    _searchResults = [food];
+  } else {
     _searchResults = [];
-    _emptyMsg = 'Lookup failed — check connection';
-    _toast('Lookup failed — check connection', 'red');
+    if (hadError)            { _emptyMsg = 'Lookup failed — check connection'; _toast('Lookup failed — check connection', 'red'); }
+    else if (offNoNutrition) { _emptyMsg = 'Product has no nutrition data'; }
+    else                     { _emptyMsg = 'Product not found'; }   // shown in place, no flicker back to camera
   }
   _searchBusy = false; _fillResults();
-  if (ok) _slideInResults();   // slide the product card up from below, like search results
+  if (food) _slideInResults();   // slide the product card up from below, like search results
+}
+
+// USDA FoodData Central UPC lookup. The Branded dataset carries gtinUpc; we accept only
+// an exact barcode match (leading zeros normalized) so a fuzzy text hit can't masquerade
+// as a scan result. Returns a food or null; throws on a network/HTTP error.
+async function _barcodeLookupUSDA(code) {
+  const key = _settings.usdaApiKey;
+  if (!key) return null;
+  const url = `https://api.nal.usda.gov/fdc/v1/foods/search?api_key=${encodeURIComponent(key)}` +
+              `&query=${encodeURIComponent(code)}&dataType=Branded&pageSize=10`;
+  const res = await _fetchTimeout(url);
+  if (!res.ok) throw new Error('USDA ' + res.status);
+  const data = await res.json();
+  const norm = s => String(s || '').replace(/^0+/, '');
+  const hit = (data.foods || []).find(f => norm(f.gtinUpc) === norm(code));
+  return hit ? _foodFromUSDA(hit) : null;
+}
+
+// Open Food Facts product lookup. Returns a food, 'no-nutrition' (found but unusable),
+// or null (not found); throws on a network/HTTP error.
+async function _barcodeLookupOFF(code) {
+  const url = `https://world.openfoodfacts.org/api/v2/product/${encodeURIComponent(code)}.json?fields=${OFF_FIELDS}`;
+  const res = await _fetchTimeout(url);
+  const data = await res.json();
+  if (data.status === 1 && data.product) return _foodFromOFF(data.product) || 'no-nutrition';
+  return null;
 }
 
 // Restart the slide-up animation on the freshly rendered result card.
@@ -1245,7 +1277,7 @@ async function _onBarcodeDecoded(code) {
   }
 
   // 3/4) Look up: success slides the card in, failure shows "Product not found" in place.
-  await _barcodeLookup(code, /*fromScan*/ true);
+  await _barcodeLookup(code);
   _decoding = false;
 }
 
