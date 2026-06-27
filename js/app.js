@@ -75,7 +75,7 @@ db.openDB()
 
 // ── Toast notification ────────────────────────────────────────────────────────
 
-function showToast(message, color = 'lime') {
+function showToast(message, color = 'lime', opts = {}) {
   document.querySelector('.toast')?.remove();
 
   const el = document.createElement('div');
@@ -86,10 +86,18 @@ function showToast(message, color = 'lime') {
   document.body.appendChild(el);
 
   requestAnimationFrame(() => el.classList.add('toast-show'));
-  setTimeout(() => {
+
+  let timer = null;
+  const dismiss = () => {
+    if (timer) { clearTimeout(timer); timer = null; }
     el.classList.remove('toast-show');
     setTimeout(() => el.remove(), 300);
-  }, 4000);
+  };
+  // Sticky toasts stay until the caller dismisses them (e.g. a background retry
+  // in progress). Everything else auto-dismisses as before.
+  if (!opts.sticky) timer = setTimeout(dismiss, opts.duration || 4000);
+  el.dismissToast = dismiss;
+  return el;
 }
 
 function _fmt(date) {

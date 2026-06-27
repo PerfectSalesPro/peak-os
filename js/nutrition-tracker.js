@@ -510,13 +510,15 @@ function _searchPanel() {
     <div id="nu-results">${_resultsHTML()}</div>`;
 }
 
-let _searchToken = 0;   // invalidates older/overlapping searches so a slow source can't clobber a newer query
+let _searchToken = 0;     // invalidates older/overlapping searches so a slow source can't clobber a newer query
+let _loadingToast = null; // sticky "Loading more results…" toast during a background OFF retry
 
 async function _runSearch() {
   const inp = document.getElementById('nu-search-input');
   const q = (inp?.value || '').trim();
   _svState = {};
   const token = ++_searchToken;     // every call supersedes any in-flight one
+  _loadingToast?.dismissToast?.(); _loadingToast = null;   // drop any stale background-retry toast
   if (q.length < 2) { _searchResults = []; _searchError = false; _searchBusy = false; _fillResults(); return; }
 
   _searchBusy = true; _searchError = false; _searchResults = []; _fillResults();
@@ -568,10 +570,40 @@ async function _runSearch() {
       ? 'Showing your foods — food databases are unavailable'
       : 'Search failed — food databases are unavailable', _searchResults.length ? 'amber' : 'red');
   } else if (offFailed) {
-    _toast('USDA results shown — Open Food Facts is unavailable', 'amber');
+    // OFF stumbled but USDA (or local) already gave us results. Don't surface a
+    // failure — quietly try OFF once more in the background and merge it in if it
+    // recovers. Only the final amber toast (if the retry also fails) tells the user.
+    _retryOFFInBackground(q, token, local, usda, whole);
   } else if (usdaFailed) {
     _toast('Open Food Facts shown — USDA is unavailable (check key)', 'amber');
   }
+}
+
+// OFF failed its first pass but USDA carried the search. Wait a beat, try OFF once
+// more, and if it recovers merge its results into what's already on screen — in
+// ranked order, no clear, no spinner. A sticky "Loading more results…" toast marks
+// the attempt; it's removed on success, or replaced with the amber notice on failure.
+async function _retryOFFInBackground(q, token, local, usda, whole) {
+  _loadingToast = _toast('Loading more results…', 'blue', { sticky: true });
+  await _sleep(5000);
+  if (token !== _searchToken) { _loadingToast?.dismissToast?.(); _loadingToast = null; return; }
+
+  let off;
+  try {
+    off = await _searchOFF(q, 1);     // a single quiet attempt
+  } catch (err) {
+    console.warn('[Peak OS] Open Food Facts background retry failed', err);
+    _loadingToast = null;             // replaced by the amber toast below
+    if (token === _searchToken) _toast('USDA results shown — Open Food Facts is unavailable', 'amber');
+    return;
+  }
+  if (token !== _searchToken) { _loadingToast?.dismissToast?.(); _loadingToast = null; return; }
+
+  // Merge OFF in alongside the already-shown USDA + local results, re-ranked.
+  _searchResults = _rankResults(local, off, usda, whole);
+  _searchError = false;
+  _fillResults();
+  _loadingToast?.dismissToast?.(); _loadingToast = null;
 }
 
 // A "whole-food" query is a short, all-letters phrase ("chicken breast", "white
@@ -625,11 +657,11 @@ function _fetchTimeout(url) {
 //  ranks well but sends no Access-Control-Allow-Origin, so it's unusable from the browser.)
 const OFF_SEARCH_ATTEMPTS = 3;
 
-async function _searchOFF(q) {
+async function _searchOFF(q, attempts = OFF_SEARCH_ATTEMPTS) {
   const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${encodeURIComponent(q)}` +
               `&search_simple=1&action=process&json=1&page_size=25&fields=${OFF_FIELDS}`;
   let lastErr;
-  for (let attempt = 0; attempt < OFF_SEARCH_ATTEMPTS; attempt++) {
+  for (let attempt = 0; attempt < attempts; attempt++) {
     if (attempt) await _sleep(300 * attempt);   // 0, 300, 600, 900ms
     let res;
     try {
@@ -1909,7 +1941,7 @@ function _foodFromUSDA(p) {
 
 // ── Small utilities ────────────────────────────────────────────────────────────
 
-function _toast(msg, color) { (window.peakShowToast || console.log)(msg, color); }
+function _toast(msg, color, opts) { return (window.peakShowToast || function(){})(msg, color, opts); }
 
 function _sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
