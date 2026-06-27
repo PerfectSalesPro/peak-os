@@ -301,6 +301,85 @@ per-group protein hit rate (`calc.proteinHitRate`), realized deficit
 (`-calc.calorieBalance`, intake−target), and the training/rest split. Promote
 those into a small exported summary fn when Stage 8 needs them.
 
+---
+
+### Stage 6 — Post-build amendments (2026-06-27)
+
+Follow-on work shipped after the initial Stage 6 DoD pass. All in
+`js/nutrition-tracker.js` unless noted. SW cache bumped `v17 → v22` across these.
+Each change was verified live in a headless Chrome session against the running app.
+
+**USDA FoodData Central as a second food-search source (commit `60a065d`):**
+- Optional `usdaApiKey` in settings (Nutrition → Targets, alongside the Claude key).
+  When set, text search queries USDA **and** OFF in parallel; without it, OFF only.
+- `_searchUSDA` mirrors OFF's retry-with-backoff; `_foodFromUSDA` normalizes the
+  FDC search shape (per-100 g; sodium/potassium already mg, no ×1000 like OFF).
+- Ranking: for plain whole-food queries (`_isWholeFoodQuery` — short, all-letters),
+  USDA **Foundation/SR Legacy** float to the top; OFF leads for branded/packaged.
+  Local custom foods always first. Deduped by name+brand, capped at 30.
+- Each result labels its source (lime `custom` / blue `USDA` / amber `OFF`).
+- Verified: USDA reachable + CORS-clean from the browser (~365 ms); whole-food
+  ranking and the per-source tags render correctly.
+
+**Search "stuck on Searching…" hang fix (same commit):**
+- Root cause: `Promise.allSettled` blocked rendering on the **slowest** source.
+  OFF's `cgi/search.pl` intermittently fails *slowly* (~12 s before "Failed to
+  fetch"), and `_searchOFF` retried it — so a fast USDA result was held hostage and
+  the fire-and-forget `_runSearch` left `_searchBusy` stuck true forever.
+- Fix: render each source **progressively** (`paint()` per source as it settles);
+  `_fetchTimeout` (AbortController, 5 s) bounds every fetch; a `_searchToken` guard
+  invalidates stale/overlapping searches; OFF retries trimmed 4 → 3.
+
+**Background OFF retry + late-merge (commit `6397257`):**
+- When OFF fails its first pass but USDA carried the search, retry OFF **once**
+  after 5 s instead of surfacing failure. A sticky "Loading more results…" toast
+  marks it; on success the OFF results merge into the shown USDA results in ranked
+  order (no clear, no spinner) and the toast clears; on failure the amber toast
+  stays. `app.js` `showToast` gained a backward-compatible `{ sticky, duration }`
+  + `dismissToast` handle.
+
+**Barcode post-scan transition polish (commit `3193b75`):**
+- `_onBarcodeDecoded` now fully stops the stream (`_teardownCam`: pause video, null
+  `srcObject`, `getTracks().forEach(t => t.stop())`), waits a render cycle
+  (`_camClosed` — double-rAF with a 100 ms fallback so a hidden page can't stall),
+  then fades `#nu-cam-wrap` over 150 ms before clearing. Success renders the card
+  with a `nu-slide-up` animation; not-found / no-nutrition / network-error each show
+  an in-place message (`_emptyMsg`) — no flicker back to the camera. (`styles.css`,
+  both motions disabled under `prefers-reduced-motion`.)
+
+**Barcode lookup: USDA-by-UPC primary → OFF fallback (commit `0bfaf05`):**
+- Barcode scan/entry checks USDA first (by UPC, when a key is set), then OFF.
+  `_barcodeLookupUSDA` queries the Branded dataset and accepts only an **exact
+  `gtinUpc` match** (leading zeros normalized) so a fuzzy text hit can't masquerade
+  as a scan. Text search is unchanged (USDA + OFF parallel).
+- **FatSecret was requested as the primary barcode source but is not usable here.**
+  Verified in-browser that `oauth.fatsecret.com` and `platform.fatsecret.com` are
+  **reachable but CORS-blocked** (opaque under `no-cors`, "Failed to fetch" under
+  normal mode), and FatSecret additionally requires server-side IP allowlisting and
+  a confidential client secret. None of that works in a no-backend PWA, so the
+  OAuth 2.0 client-credentials flow can't run client-side. Chose USDA-by-UPC
+  instead — CORS-clean, reuses the existing key, strong branded coverage (verified
+  real UPCs for Coke/Oreo resolve to exact `gtinUpc` matches). No FatSecret
+  credential fields were added (they'd be dead inputs).
+
+**Barcode scanner loop fix (commit `003a229`):**
+- After a hit the lookup re-fired ~1×/sec (result → "Searching…" flicker, Add
+  untappable). Cause: `@zxing/browser`'s `BrowserMultiFormatReader` has **no
+  `.reset()`** (that was `@zxing/library`), so `_teardownCam`'s `reader.reset()`
+  threw silently and the reader kept decoding the detached video's frozen frame.
+- Fix: capture the `IScannerControls` from `decodeFromVideoElement` and
+  `controls.stop()` on teardown (keep `reader.reset()` as a library fallback); add
+  a `_scanDone` lock set on a successful render and cleared only by `_startCamera`
+  (rescan) or `_renderMethodPanel` (method switch); `_onBarcodeDecoded` and the
+  BarcodeDetector loop both early-return while locked.
+
+**Coverage note:** all of the above verified live against the running app. Two
+paths could not be exercised in automation and were confirmed by code review: the
+direct meal-scan **API-key path** to Claude (needs a real key), and the **ZXing**
+barcode path (can't mock the `esm.run` dynamic import) — the BarcodeDetector path
+was driven live with a fake `canvas.captureStream` camera, and the `_scanDone`
+guard protects both paths.
+
 ## Stage 6b — Meal planner (deferred, ask human before starting)
 Per the stage contract's split clause, the MFP-Premium meal planner (7-day plan
 generation, diet prefs/allergies, auto grocery list, prep batch mode) was **not**
