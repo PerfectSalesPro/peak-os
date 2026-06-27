@@ -1,9 +1,13 @@
-// IndexedDB wrapper — all 13 stores from data-models.md.
+// IndexedDB wrapper — the data-models.md stores plus Stage-6 nutrition meta.
 // Every store uses { keyPath: 'id' }; date-indexed stores carry one extra index.
 // API: openDB · put · get · getAll · remove · getByDateRange · exportDB · importDB
+//
+// v2 (Stage 6) adds two stores. onupgradeneeded only *creates* stores that don't
+// already exist, so existing devices keep all their data; the new stores appear
+// empty. No existing store shape changes.
 
 const DB_NAME    = 'peak-os';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 const STORE_DEFS = [
   { name: 'settings'    , keyPath: 'id' },
@@ -19,6 +23,9 @@ const STORE_DEFS = [
   { name: 'vials'       , keyPath: 'id' },
   { name: 'bloodPanels' , keyPath: 'id', indexes: [{ name: 'drawDate', unique: false }] },
   { name: 'verdicts'    , keyPath: 'id', indexes: [{ name: 'weekOf',   unique: false }] },
+  // Stage 6 — nutrition per-day meta (water, day-type override) + fasting log.
+  { name: 'nutritionDays' , keyPath: 'id', indexes: [{ name: 'date',     unique: true  }] },
+  { name: 'fastingSessions', keyPath: 'id', indexes: [{ name: 'startedAt', unique: false }] },
 ];
 
 let _db = null;

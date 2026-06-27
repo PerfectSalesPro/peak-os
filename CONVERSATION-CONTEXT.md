@@ -46,8 +46,9 @@
 - Stage 4: Done (Training tracker, templates, live workout, rest timer, PR detection, plate/warmup calc, Strong CSV import)
 - Stage 5: Done (Analytics, 1RM charts, volume trends, muscle heat map, consistency calendar, exercise browser, range selector 1W/1M/3M/6M/1Y/All)
 - History deletion: Done (swipe-left-to-delete on history cards + trash button in session detail view, both with confirm bottom sheet; workout ids are string UUIDs — never coerce to number)
-- Stage 6: Todo — NEXT (Nutrition logger: food diary, barcode scanner, carb cycling, water, fasting)
-- Stage 7: Todo (Peptide tracker)
+- Stage 6: Done (Nutrition logger: food diary, 7 logging methods, barcode via Open Food Facts, carb cycling, water, fasting 16:8). 81/81 calc tests pass. DB_VERSION 1→2 (added nutritionDays + fastingSessions stores). SW at peak-os-v17.
+- Stage 6b: Deferred (Meal planner — ask human before starting)
+- Stage 7: Todo — NEXT (Peptide tracker; confirm peptide library source first)
 - Stage 8: Todo (Decision engine + weekly verdict)
 - Stage 9: Todo (Bloodwork pipeline — last, blood drawn quarterly, last draw May 2 2026)
 

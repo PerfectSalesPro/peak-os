@@ -22,7 +22,8 @@ you go.
 | 3 | Body composition dashboard | Done | 1,2 | formulas, design-system + design skill |
 | 4 | Training tracker (live workout) | Done | 1 | training-spec, data-models, design-system + design skill |
 | 5 | Training analytics (1RM, volume, PRs) | Done | 1,4 | training-spec, formulas, design-system + design skill |
-| 6 | Nutrition logger (food + barcode + carb cycle) | Todo | 1 | nutrition-spec, data-models, design-system + design skill |
+| 6 | Nutrition logger (food + barcode + carb cycle) | Done | 1 | nutrition-spec, data-models, design-system + design skill |
+| 6b | Meal planner (7-day plans, grocery list, prep) | Todo (deferred — ask human) | 6 | nutrition-spec, design-system + design skill |
 | 7 | Peptide tracker (protocol + doses) | Todo | 1 | peptide-spec, compliance, design-system + design skill |
 | 8 | Decision engine + weekly verdict | Todo | 1–7 | decision-rules, formulas, compliance, design-system + design skill |
 | 9 | Bloodwork pipeline (last) | Todo | 1,8 | biomarker-ranges, compliance, data-models, design-system + design skill |

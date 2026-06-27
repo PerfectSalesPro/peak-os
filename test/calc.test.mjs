@@ -8,6 +8,7 @@ import {
   setVolume, sessionVolume, muscleVolumeWeekly, volumeDelta,
   plateSolution, warmupSets,
   reconstitutionConcentration, unitsToDraw, halfLifeDecay, adherencePct,
+  scaleMacros, sumMacros, netCarbs, dayTotals, proteinHitRate, calorieBalance,
 } from '../js/calc.js';
 
 // ── Test runner ───────────────────────────────────────────────────────────────
@@ -254,6 +255,47 @@ check('adherencePct(14, 14) = 100', adherencePct(14, 14), 100);
 check('adherencePct(7, 14)  = 50',  adherencePct(7, 14),   50);
 check('adherencePct(0, 14)  = 0',   adherencePct(0, 14),    0);
 checkNull('adherencePct(0, 0)  = null', adherencePct(0, 0));
+
+// ── Nutrition (Stage 6) ─────────────────────────────────────────────────────
+
+console.log('\nNutrition:');
+
+// scaleMacros: 2 servings of a 100-kcal / 10P / 12C / 3F item
+const scaled = scaleMacros({ kcal: 100, protein: 10, carbs: 12, fat: 3, fiber: 2 }, 2);
+check('scaleMacros kcal  = 200', scaled.kcal, 200);
+check('scaleMacros protein = 20', scaled.protein, 20);
+check('scaleMacros fiber = 4',  scaled.fiber, 4);
+check('scaleMacros missing micro → 0', scaled.sodium, 0);
+check('scaleMacros half serving rounds', scaleMacros({ kcal: 101 }, 0.5).kcal, 50.5);
+
+// sumMacros across two entries
+const summed = sumMacros([
+  { kcal: 200, protein: 20, carbs: 24, fat: 6 },
+  { kcal: 150, protein: 5,  carbs: 30, fat: 2 },
+]);
+check('sumMacros kcal    = 350', summed.kcal, 350);
+check('sumMacros protein = 25',  summed.protein, 25);
+check('sumMacros carbs   = 54',  summed.carbs, 54);
+
+// netCarbs floors at 0
+check('netCarbs(30,8) = 22', netCarbs(30, 8), 22);
+check('netCarbs(5,9)  = 0  (floored)', netCarbs(5, 9), 0);
+
+// dayTotals across meal records each holding entries[]
+const dt = dayTotals([
+  { entries: [{ computedMacros: { kcal: 400, protein: 30 } }, { computedMacros: { kcal: 100, protein: 5 } }] },
+  { entries: [{ computedMacros: { kcal: 600, protein: 45 } }] },
+]);
+check('dayTotals kcal    = 1100', dt.kcal, 1100);
+check('dayTotals protein = 80',   dt.protein, 80);
+
+// proteinHitRate
+check('proteinHitRate(150,200) = 0.75', proteinHitRate(150, 200), 0.75);
+checkNull('proteinHitRate(150,0) = null', proteinHitRate(150, 0));
+
+// calorieBalance: intake − target (negative = deficit)
+check('calorieBalance(1800,2000) = -200', calorieBalance(1800, 2000), -200);
+check('calorieBalance(2200,2000) = 200',  calorieBalance(2200, 2000), 200);
 
 // ── Summary ───────────────────────────────────────────────────────────────────
 const total = passed + failed;

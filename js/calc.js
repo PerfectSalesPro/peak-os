@@ -192,6 +192,60 @@ export function adherencePct(dosesTaken, dosesScheduled) {
   return (dosesTaken / dosesScheduled) * 100;
 }
 
+// ── Nutrition (Stage 6) ─────────────────────────────────────────────────────
+
+// The macro keys the engine sums. kcal + the three macros + the four tracked
+// micros from nutrition-spec.md.
+export const MACRO_KEYS = ['kcal', 'protein', 'carbs', 'fat', 'fiber', 'sugar', 'sodium', 'potassium'];
+
+// Scale a per-serving macro object by a serving count. Missing fields → 0.
+// Returns a full object over MACRO_KEYS, rounded to 1 decimal.
+export function scaleMacros(perServing, servings) {
+  const out = {};
+  const n = Number(servings) || 0;
+  for (const k of MACRO_KEYS) {
+    out[k] = +(((perServing && perServing[k]) || 0) * n).toFixed(1);
+  }
+  return out;
+}
+
+// Sum an array of macro objects into one total over MACRO_KEYS.
+export function sumMacros(list) {
+  const out = {};
+  for (const k of MACRO_KEYS) out[k] = 0;
+  for (const m of (list || [])) {
+    for (const k of MACRO_KEYS) out[k] += (m && m[k]) || 0;
+  }
+  for (const k of MACRO_KEYS) out[k] = +out[k].toFixed(1);
+  return out;
+}
+
+// Net carbs = carbs − fiber, floored at 0.
+export function netCarbs(carbs, fiber) {
+  return Math.max(0, (carbs || 0) - (fiber || 0));
+}
+
+// Sum every entry across a day's meal records (each record holds entries[]).
+export function dayTotals(mealRecords) {
+  const all = [];
+  for (const rec of (mealRecords || [])) {
+    for (const e of (rec.entries || [])) all.push(e.computedMacros);
+  }
+  return sumMacros(all);
+}
+
+// Protein hit rate as a 0..1+ fraction (actual / target). null if no target.
+export function proteinHitRate(actualG, targetG) {
+  if (!targetG) return null;
+  return actualG / targetG;
+}
+
+// Calorie balance vs target: intake − target. Negative = under (a deficit on a
+// cut). Stage 8's realized-deficit signal is the negative of this on cut days.
+export function calorieBalance(intakeKcal, targetKcal) {
+  return (intakeKcal || 0) - (targetKcal || 0);
+}
+
 // ── Internal helpers (not exported) ──────────────────────────────────────────
 
 // Shift a YYYY-MM-DD string by ±days. Uses noon UTC to avoid DST edge cases.

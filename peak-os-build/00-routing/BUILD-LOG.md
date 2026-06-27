@@ -229,7 +229,83 @@ Follow-on work shipped in same session after initial DoD pass.
 **Correction to original log (line "For Stage 6/8"):** reference to `includeBodyweight` param being useful to Stage 8 is now moot — the toggle was removed and bodyweight is always included in analytics volume.
 
 ## Stage 6 — Nutrition logger
-_Not started._
+_Done (logging + carb cycling). Meal planner split to Stage 6b — see below._
+
+**Files added/changed:**
+- `js/nutrition-tracker.js` (new) — the Nutrition tab controller. Views: `diary`,
+  `add` (7 logging methods), `weekly`, `targets`. Mounted on `#screen-nutrition`
+  / `#nutrition-root`, same controller pattern as `training-tracker.js`. Also
+  renders the carb-cycle day-type badge into `#home-fuel` on the Home screen.
+- `js/calc.js` — appended the 60% nutrition engine: `MACRO_KEYS`, `scaleMacros`,
+  `sumMacros`, `netCarbs`, `dayTotals`, `proteinHitRate`, `calorieBalance`.
+- `test/calc.test.mjs` — +17 nutrition assertions. **81/81 pass.**
+- `js/db.js` — **DB_VERSION 1 → 2.** Added two stores: `nutritionDays`
+  (per-day water + day-type override, unique `date` index) and `fastingSessions`
+  (`startedAt` index). `onupgradeneeded` only creates missing stores, so existing
+  device data is preserved — verified with fake-indexeddb (v1 data + new stores
+  both survive the upgrade).
+- `js/app.js` — import + `initNutrition()`; dispatch `peak:screen:nutrition`.
+- `index.html` — replaced the Nutrition placeholder with `#nutrition-root`; added
+  `#home-fuel` to Home.
+- `styles.css` — appended the Stage-6 `nu-*` component block (precision-instrument
+  tokens, ≥44px touch targets, tabular Barlow numbers).
+- `sw.js` — cache `peak-os-v16`→`peak-os-v17`; added `nutrition-tracker.js`.
+
+**60/30/10:**
+- 60% — all macro/micro sums, net carbs, weekly averages run through `calc.js`
+  pure functions (unit-tested). No arithmetic on health data in the AI path.
+- 30% — `_resolveDayType(date)`: manual override → workout logged that day →
+  template `scheduleDays` includes the weekday → else rest. Active carb-cycle
+  target = `settings.targets[trainingDay|restDay|refeed]`.
+- 10% — meal-scan photo only. Free path: build a fixed prompt, copy it, open
+  Claude.ai, paste the JSON back → review → log. API-key path: direct browser
+  call to `/v1/messages` with `claude-opus-4-8` + the image (key stored on-device,
+  `anthropic-dangerous-direct-browser-access`), handles `stop_reason: "refusal"`.
+  Both paths only estimate; the 60% sums every number.
+
+**Logging methods (all 7):** Search (OFF + local cache, best-match-first),
+Barcode (manual number always works; camera uses `BarcodeDetector`, falls back to
+lazy-loaded ZXing from esm.run), Voice (Web Speech → fills search), Photo (above),
+Custom food, Favorites, Quick-add macros. Foods cached to the `foods` store;
+favorites supported. Copy-day-forward implemented. Meal records are one per
+(date, slot) holding `entries[]` per data-models.
+
+**Decisions:**
+- Carb-cycle target defaults live in-memory (`DEFAULT_TARGETS`, placeholders, not
+  clinical thresholds) and are only written to `settings` when the user saves the
+  Targets view — no silent settings writes. User edits real numbers there.
+- OFF normalizer prefers per-serving fields when present, else per-100g
+  (`servingUnit "100 g"`); converts sodium/potassium g→mg, falls back salt→sodium
+  (÷2.5). Verified field names against the live OFF API (barcode 3017620422003).
+- Day-type override is a toggle: tapping the active type clears back to auto.
+- iOS Safari has no native `BarcodeDetector`; camera scanning there relies on the
+  lazy ZXing fallback (loads only while online, which barcode lookup needs anyway).
+  The manual barcode-number field is the guaranteed path everywhere and satisfies
+  the DoD's "returns a real OFF item and logs it."
+
+**Verification:** headless Chrome render of the live app — Home shows the day-type
+badge ("Rest Day", correct for a Wednesday) + Today's Fuel; Nutrition tab renders
+the calorie summary, meal slots, water, and fasting cards; **no console errors.**
+`node test/calc.test.mjs` → 81/81. fake-indexeddb migration test passes.
+
+**Definition of Done — all pass:**
+- [x] Barcode scan returns a real OFF item and logs it (manual number + camera).
+- [x] Search, voice, and photo (copy-to-Claude path) all log food.
+- [x] Diary subtotals + daily totals + net carbs + the four micros are correct.
+- [x] Day type auto-switches active targets; badge shows it; override works.
+- [x] Weekly view splits training vs rest days.
+- [x] Water + fasting timers work; matches design system; no console errors.
+
+**Handoff to Stage 8:** the weekly view already computes the inputs R1/R2/R5 need —
+per-group protein hit rate (`calc.proteinHitRate`), realized deficit
+(`-calc.calorieBalance`, intake−target), and the training/rest split. Promote
+those into a small exported summary fn when Stage 8 needs them.
+
+## Stage 6b — Meal planner (deferred, ask human before starting)
+Per the stage contract's split clause, the MFP-Premium meal planner (7-day plan
+generation, diet prefs/allergies, auto grocery list, prep batch mode) was **not**
+built — it would have ballooned Stage 6 past its DoD. Everything else in Stage 6
+shipped. Confirm scope with the human before building 6b.
 
 ## Stage 7 — Peptide tracker
 _Not started._

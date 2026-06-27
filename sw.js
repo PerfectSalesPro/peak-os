@@ -1,4 +1,4 @@
-const CACHE = 'peak-os-v16';
+const CACHE = 'peak-os-v18';
 const SHELL = [
   './',
   './index.html',
@@ -15,6 +15,7 @@ const SHELL = [
   './js/training-data.js',
   './js/training-tracker.js',
   './js/training-analytics.js',
+  './js/nutrition-tracker.js',
 ];
 
 self.addEventListener('install', e => {

@@ -39,7 +39,29 @@
       "Bash(curl -s http://127.0.0.1:9222/json/list)",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000)",
       "Bash(npx playwright *)",
-      "Bash(NODE_PATH=/Users/dustinfultz/.npm/_npx/e41f203b7505f1fb/node_modules node *)"
+      "Bash(NODE_PATH=/Users/dustinfultz/.npm/_npx/e41f203b7505f1fb/node_modules node *)",
+      "Bash(curl -s \"https://world.openfoodfacts.org/api/v2/product/3017620422003.json?fields=product_name,brands,code,serving_size,serving_quantity,nutriments\")",
+      "Bash(command -v chromium chromium-browser \"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\")",
+      "Bash(grep -oE 'id=\"nutrition-root\">.{0,400}')",
+      "Bash('/Applications/Google Chrome.app/Contents/MacOS/Google Chrome' --headless --disable-gpu --no-sandbox --virtual-time-budget=6000 --user-data-dir=/tmp/peakchrome2 --dump-dom http://localhost:8087/index.html)",
+      "Bash(pkill -f \"http.server 8087\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://127.0.0.1:8000/index.html)",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code} | %{size_download} bytes\\\\n\" \"https://search.openfoodfacts.org/search?q=chicken%20breast&page_size=5\")",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code} | %{size_download} bytes\\\\n\" \"https://world.openfoodfacts.org/api/v2/search?search_terms=chicken%20breast&page_size=5&fields=product_name,brands,code\")",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code} | %{size_download} bytes\\\\n\" -A \"Mozilla/5.0 PeakOS\" \"https://world.openfoodfacts.org/cgi/search.pl?search_terms=chicken&search_simple=1&action=process&json=1&page_size=5&fields=product_name\")",
+      "Bash(curl -s \"https://search.openfoodfacts.org/search?q=chicken%20breast&page_size=2&fields=product_name,brands,code,serving_size,serving_quantity,nutriments\")",
+      "Bash(curl -s -D - -o /dev/null \"https://search.openfoodfacts.org/search?q=chicken&page_size=1\")",
+      "Bash(curl -s -o /dev/null -w \"HTTP %{http_code}\\\\n\" \"https://world.openfoodfacts.org/api/v2/product/5054268934602.json?fields=product_name,brands,code,serving_size,serving_quantity,nutriments\")",
+      "Bash(curl -s -D - -o /dev/null \"https://world.openfoodfacts.org/api/v2/product/5054268934602.json?fields=product_name\")",
+      "Bash(curl -s -D - -o /dev/null -H \"Origin: http://127.0.0.1:8000\" \"https://search.openfoodfacts.org/search?q=chicken&page_size=1\")",
+      "Bash(curl -s -D - -o /dev/null -X OPTIONS -H \"Origin: http://127.0.0.1:8000\" -H \"Access-Control-Request-Method: GET\" \"https://search.openfoodfacts.org/search?q=chicken&page_size=1\")",
+      "Bash(curl -s -D - -o /dev/null -H \"Origin: http://127.0.0.1:8000\" -A \"Mozilla/5.0\" \"https://world.openfoodfacts.org/cgi/search.pl?search_terms=chicken&search_simple=1&action=process&json=1&page_size=1&fields=product_name\")",
+      "Bash(curl -s \"https://world.openfoodfacts.org/api/v2/search?search_terms=chicken+breast&page_size=2&fields=product_name,brands,code,serving_size,serving_quantity,nutriments\")",
+      "Bash(curl -s -D - -o /dev/null -H \"Origin: http://127.0.0.1:8000\" \"https://search.openfoodfacts.org/search?q=chicken+breast&page_size=3\")",
+      "Bash(curl -s \"https://search.openfoodfacts.org/search?q=chicken+breast&page_size=5&fields=product_name\")",
+      "Bash(git add *)",
+      "Bash(git commit -q -m ' *)",
+      "Bash(git push *)"
     ]
   }
 }

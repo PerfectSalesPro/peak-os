@@ -5,6 +5,7 @@ import { initBodyScreen } from './health-screen.js';
 import { initBodyDashboard } from './body-dashboard.js';
 import { initTrainingTracker } from './training-tracker.js';
 import { migrateExerciseMuscles } from './training-data.js';
+import { initNutrition } from './nutrition-tracker.js';
 
 // Expose for later stages
 window.peakDB   = db;
@@ -24,8 +25,9 @@ function activateTab(id) {
   screens.forEach(s => {
     s.classList.toggle('active', s.id === `screen-${id}`);
   });
-  if (id === 'body')  window.dispatchEvent(new CustomEvent('peak:screen:body'));
-  if (id === 'train') window.dispatchEvent(new CustomEvent('peak:screen:train'));
+  if (id === 'body')      window.dispatchEvent(new CustomEvent('peak:screen:body'));
+  if (id === 'train')     window.dispatchEvent(new CustomEvent('peak:screen:train'));
+  if (id === 'nutrition') window.dispatchEvent(new CustomEvent('peak:screen:nutrition'));
 }
 
 tabs.forEach(t => t.addEventListener('click', () => activateTab(t.dataset.tab)));
@@ -67,6 +69,7 @@ db.openDB()
 
     initBodyScreen();
     initBodyDashboard();
+    initNutrition();
   })
   .catch(err => console.error('[Peak OS] DB init failed:', err));
 

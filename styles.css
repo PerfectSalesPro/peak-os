@@ -3016,3 +3016,317 @@ button {
     padding-bottom: 0;
   }
 }
+
+/* ════════════════════════════════════════════════════════════════════════════
+   STAGE 6 — NUTRITION
+   ════════════════════════════════════════════════════════════════════════════ */
+
+#nutrition-root { padding: 14px 0 calc(var(--tab-h) + 20px); }
+
+/* View tabs */
+.nu-tabs {
+  display: flex;
+  gap: 6px;
+  padding: 0 12px 12px;
+}
+.nu-tab {
+  flex: 1;
+  min-height: 34px;
+  border: 0.5px solid var(--b1);
+  border-radius: var(--r-pill);
+  background: transparent;
+  color: var(--txt2);
+  font-family: var(--body);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+}
+.nu-tab--on { background: var(--lime); border-color: var(--lime); color: #07070A; font-weight: 600; }
+
+/* Date bar */
+.nu-datebar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px 12px;
+}
+.nu-arrow {
+  width: 36px; height: 36px;
+  flex: 0 0 36px;
+  border: 0.5px solid var(--b1);
+  border-radius: var(--r-md);
+  background: var(--s1);
+  color: var(--txt);
+  font-size: 20px;
+  cursor: pointer;
+}
+.nu-arrow--off { opacity: 0.3; }
+.nu-date-center { flex: 1; text-align: center; }
+.nu-date-label {
+  background: none; border: none; cursor: pointer;
+  font-family: var(--disp); font-size: 20px; font-weight: 700;
+  color: var(--txt); letter-spacing: 0.5px;
+}
+.nu-daytype-row {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+  margin-top: 6px;
+}
+.nu-daytype-set { display: flex; gap: 5px; }
+.nu-dt-btn {
+  min-height: 28px; padding: 0 10px;
+  border: 0.5px solid var(--b1); border-radius: var(--r-pill);
+  background: transparent; color: var(--txt2);
+  font-family: var(--body); font-size: 10px; font-weight: 500; cursor: pointer;
+}
+.nu-dt-btn--on { background: var(--s2); border-color: var(--lime-m); color: var(--lime); }
+
+/* Calorie summary */
+.nu-cal-head { display: flex; justify-content: space-between; align-items: flex-end; }
+.nu-cal-left { text-align: right; }
+.nu-macro-grid { display: flex; flex-direction: column; gap: 11px; }
+.nu-macro-top { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 5px; }
+.nu-macro-lbl { font-family: var(--body); font-size: 11px; color: var(--txt2); }
+.nu-macro-val { font-family: var(--disp); font-size: 13px; color: var(--txt2); }
+.nu-macro-val b { color: var(--txt); font-weight: 700; }
+
+.nu-micro-row {
+  display: grid; grid-template-columns: repeat(5, 1fr);
+  gap: 6px; margin-top: 14px; padding-top: 12px;
+  border-top: 0.5px solid var(--b2);
+}
+.nu-micro { text-align: center; }
+.nu-micro-v { display: block; font-family: var(--disp); font-size: 16px; font-weight: 700; color: var(--txt); }
+.nu-micro-l { display: block; font-family: var(--body); font-size: 8px; color: var(--txt2); margin-top: 2px; line-height: 1.2; }
+
+/* Generic helpers */
+.nu-row-between { display: flex; justify-content: space-between; align-items: center; }
+
+/* Chips / small buttons */
+.nu-chip {
+  min-height: 36px; padding: 0 14px;
+  border: 0.5px solid var(--b1); border-radius: var(--r-pill);
+  background: var(--s2); color: var(--txt);
+  font-family: var(--body); font-size: 12px; font-weight: 500; cursor: pointer;
+}
+.nu-chip:active { transform: scale(0.96); }
+.nu-chip--lime { background: var(--lime); border-color: var(--lime); color: #07070A; font-weight: 600; }
+.nu-chip--blue { background: var(--blue-d); border-color: #4DAAFF30; color: var(--blue); }
+
+/* Water */
+.nu-water-btns { display: flex; gap: 8px; }
+.nu-water-btns .nu-chip { flex: 1; }
+
+/* Fasting */
+.nu-fast-time { margin: 8px 0 2px; }
+
+/* Meals */
+.nu-meal { }
+.nu-meal-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 8px; }
+.nu-meal-name { font-family: var(--disp); font-size: 17px; font-weight: 700; color: var(--txt); letter-spacing: 0.5px; }
+.nu-meal-sub { font-family: var(--disp); font-size: 11px; color: var(--txt2); }
+.nu-meal-empty { font-family: var(--body); font-size: 11px; color: var(--txt3); padding: 6px 0; }
+
+.nu-entry {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 0; border-top: 0.5px solid var(--b2);
+}
+.nu-entry-main { flex: 1; min-width: 0; }
+.nu-entry-name { font-family: var(--body); font-size: 13px; color: var(--txt); }
+.nu-entry-sv { color: var(--lime); font-size: 11px; }
+.nu-entry-meta { font-family: var(--disp); font-size: 11px; color: var(--txt2); margin-top: 1px; }
+.nu-entry-del {
+  width: 32px; height: 32px; flex: 0 0 32px;
+  border: none; background: none; color: var(--txt3);
+  font-size: 13px; cursor: pointer;
+}
+.nu-entry-del:active { color: var(--red); }
+
+.nu-add-slot {
+  width: 100%; min-height: 38px; margin-top: 8px;
+  border: 0.5px dashed var(--b1); border-radius: var(--r-md);
+  background: transparent; color: var(--txt2);
+  font-family: var(--body); font-size: 12px; cursor: pointer;
+}
+.nu-add-slot:active { border-color: var(--lime-m); color: var(--lime); }
+
+.nu-foot { padding: 4px 12px 0; }
+.nu-text-btn {
+  display: block; width: 100%; margin-top: 10px;
+  background: none; border: none; color: var(--txt2);
+  font-family: var(--body); font-size: 12px; cursor: pointer;
+}
+
+/* Add hub */
+.nu-add-head { display: flex; align-items: center; gap: 10px; padding: 0 12px 12px; }
+.nu-back {
+  background: none; border: none; color: var(--lime);
+  font-family: var(--body); font-size: 13px; cursor: pointer; padding: 0;
+}
+.nu-slotsel { display: flex; gap: 5px; padding: 0 12px 8px; }
+.nu-slot-btn {
+  flex: 1; min-height: 32px;
+  border: 0.5px solid var(--b1); border-radius: var(--r-pill);
+  background: transparent; color: var(--txt2);
+  font-family: var(--body); font-size: 11px; cursor: pointer;
+}
+.nu-slot-btn--on { background: var(--s2); border-color: var(--lime-m); color: var(--lime); }
+
+.nu-method-tabs {
+  display: flex; gap: 6px; padding: 0 12px 12px;
+  overflow-x: auto; -webkit-overflow-scrolling: touch;
+}
+.nu-method {
+  flex: 0 0 auto; min-height: 32px; padding: 0 13px;
+  border: 0.5px solid var(--b1); border-radius: var(--r-pill);
+  background: transparent; color: var(--txt2);
+  font-family: var(--body); font-size: 12px; cursor: pointer; white-space: nowrap;
+}
+.nu-method--on { background: var(--lime); border-color: var(--lime); color: #07070A; font-weight: 600; }
+
+/* Search / results */
+.nu-search-row { display: flex; gap: 8px; align-items: stretch; }
+.nu-search-row .field-input { flex: 1; }
+.nu-search-row .nu-chip { flex: 0 0 auto; }
+
+.nu-list { padding-top: 4px; }
+.nu-empty { text-align: center; color: var(--txt2); font-family: var(--body); font-size: 12px; padding: 16px 0; }
+
+.nu-result {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 0; border-top: 0.5px solid var(--b2);
+}
+.nu-result:first-child { border-top: none; }
+.nu-result-info { flex: 1; min-width: 0; }
+.nu-result-name { font-family: var(--body); font-size: 13px; color: var(--txt); }
+.nu-result-meta { font-family: var(--disp); font-size: 11px; color: var(--txt2); margin-top: 2px; }
+.nu-result-add { display: flex; align-items: center; gap: 6px; flex: 0 0 auto; }
+.nu-sv-input {
+  width: 46px; min-height: 36px; text-align: center;
+  font-family: var(--disp); font-size: 14px; font-weight: 600; color: var(--txt);
+  background: var(--s2); border: 0.5px solid var(--b1); border-radius: var(--r-sm);
+}
+.nu-sv-input:focus { border-color: var(--lime); outline: none; }
+.nu-tag {
+  font-family: var(--body); font-size: 8px; text-transform: uppercase; letter-spacing: 1px;
+  color: var(--lime); background: var(--lime-d); border: 0.5px solid var(--lime-m);
+  border-radius: var(--r-pill); padding: 1px 6px; margin-left: 4px;
+}
+.nu-tag--usda { color: var(--blue); background: var(--blue-d); border-color: #4DAAFF30; }
+.nu-tag--off  { color: var(--amber); background: var(--amber-d); border-color: #F5A62335; }
+
+/* Serving control — editable amount + unit, live macro recalc */
+.nu-result--col { flex-direction: column; align-items: stretch; gap: 8px; }
+.nu-serv { display: flex; flex-direction: column; gap: 8px; }
+.nu-serv-ctrl { display: flex; align-items: center; gap: 6px; }
+.nu-step {
+  width: 36px; height: 36px; flex: 0 0 36px;
+  border: 0.5px solid var(--b1); border-radius: var(--r-sm);
+  background: var(--s2); color: var(--lime);
+  font-family: var(--disp); font-size: 18px; line-height: 1; cursor: pointer;
+}
+.nu-step:active { transform: scale(0.94); border-color: var(--lime-m); }
+.nu-amt-input {
+  width: 64px; min-height: 36px; flex: 0 0 auto; text-align: center;
+  font-family: var(--disp); font-size: 14px; font-weight: 600; color: var(--txt);
+  background: var(--s2); border: 0.5px solid var(--b1); border-radius: var(--r-sm);
+}
+.nu-amt-input:focus { border-color: var(--lime); outline: none; }
+.nu-unit-sel {
+  flex: 1; min-width: 0; min-height: 36px; padding: 0 10px;
+  font-family: var(--body); font-size: 12px; color: var(--txt);
+  background: var(--s2); border: 0.5px solid var(--b1); border-radius: var(--r-sm);
+  -webkit-appearance: none; appearance: none; cursor: pointer;
+}
+.nu-unit-sel:focus { border-color: var(--lime); outline: none; }
+.nu-unit-fixed {
+  flex: 1; min-width: 0; font-family: var(--body); font-size: 12px; color: var(--txt2);
+  padding-left: 2px;
+}
+.nu-serv-bottom { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.nu-serv-out { font-family: var(--disp); font-size: 12px; color: var(--txt2); min-width: 0; }
+.nu-serv-out b { color: var(--lime); font-size: 14px; }
+.nu-serv-add { flex: 0 0 auto; }
+
+/* Tappable result row → opens food detail */
+.nu-result-tap {
+  display: flex; align-items: center; gap: 8px; width: 100%;
+  background: none; border: none; padding: 0; text-align: left; cursor: pointer;
+}
+.nu-result-texts { flex: 1; min-width: 0; }
+.nu-result-tap .nu-result-name,
+.nu-result-tap .nu-result-meta { display: block; }
+.nu-result-chev {
+  flex: 0 0 auto; padding-left: 4px;
+  font-family: var(--disp); font-size: 22px; line-height: 1; color: var(--txt3);
+}
+.nu-result-tap:active .nu-result-chev { color: var(--lime); }
+
+/* ── Food detail screen (MyFitnessPal-style) ── */
+.nu-detail-title {
+  font-family: var(--disp); font-size: 22px; font-weight: 700;
+  letter-spacing: 0.4px; line-height: 1.1; color: var(--txt);
+}
+.nu-detail-sub { font-family: var(--body); font-size: 12px; color: var(--txt2); margin-top: 4px; }
+
+.nu-chip-wrap { display: flex; flex-wrap: wrap; gap: 6px; }
+.nu-szchip {
+  min-height: 34px; padding: 0 12px;
+  border: 0.5px solid var(--b1); border-radius: var(--r-pill);
+  background: var(--s2); color: var(--txt2);
+  font-family: var(--body); font-size: 12px; cursor: pointer; white-space: nowrap;
+}
+.nu-szchip:active { transform: scale(0.96); }
+.nu-szchip--on { background: var(--lime); border-color: var(--lime); color: #07070A; font-weight: 600; }
+
+.nu-detail-amt-row { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+.nu-detail-amt-row .nu-amt-input { width: 96px; }
+
+.nu-prev-hero { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin: 2px 0 12px; }
+.nu-prev-hero .num-hero { font-family: var(--disp); font-weight: 800; color: var(--lime); }
+.nu-prev-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.nu-prev-cell {
+  background: var(--s2); border: 0.5px solid var(--b2); border-radius: var(--r-md);
+  padding: 10px 8px; text-align: center;
+}
+.nu-prev-val { font-family: var(--disp); font-size: 22px; font-weight: 700; line-height: 1; }
+.nu-prev-unit { font-family: var(--body); font-size: 11px; font-weight: 400; color: var(--txt2); margin-left: 1px; }
+.nu-prev-lbl {
+  font-family: var(--body); font-size: 10px; color: var(--txt2);
+  margin-top: 4px; text-transform: uppercase; letter-spacing: 1px;
+}
+.nu-prev-pct { font-family: var(--disp); font-size: 12px; color: var(--txt3); margin-top: 3px; }
+
+.nu-detail-foot { padding: 4px 12px 0; }
+
+/* Camera */
+.nu-cam { margin-top: 10px; }
+#nu-video {
+  width: 100%; border-radius: var(--r-md); background: #000;
+  aspect-ratio: 4 / 3; object-fit: cover;
+}
+
+/* Photo scan */
+.nu-file-label {
+  display: block; width: 100%; min-height: 44px; padding: 12px;
+  text-align: center; cursor: pointer;
+  border: 0.5px dashed var(--b1); border-radius: var(--r-md);
+  background: var(--s2); color: var(--txt);
+  font-family: var(--body); font-size: 13px;
+}
+.nu-photo-img { width: 100%; border-radius: var(--r-md); margin-top: 10px; }
+.nu-or {
+  text-align: center; font-family: var(--body); font-size: 9px; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--txt3); margin: 12px 0 8px;
+}
+
+/* Weekly split */
+.nu-split-stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-top: 12px; }
+.nu-split-stat { }
+.nu-wkday { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-top: 0.5px solid var(--b2); }
+.nu-wkday:first-of-type { border-top: none; }
+.nu-wkday-name { flex: 0 0 54px; font-family: var(--body); font-size: 12px; color: var(--txt); display: flex; align-items: center; gap: 5px; }
+.nu-wkday-dt { font-family: var(--disp); font-size: 9px; color: var(--txt2); border: 0.5px solid var(--b1); border-radius: 3px; padding: 0 3px; }
+.nu-wkday-bar { flex: 1; }
+.nu-wkday-val { flex: 0 0 44px; text-align: right; font-family: var(--disp); font-size: 14px; font-weight: 600; color: var(--txt); }
+
+select.field-input { -webkit-appearance: none; appearance: none; }

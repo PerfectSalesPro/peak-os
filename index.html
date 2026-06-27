@@ -36,6 +36,8 @@
         <header class="screen-header">
           <span class="section-label">Today</span>
         </header>
+        <!-- Stage 6: carb-cycle day-type badge + today's fuel (JS-rendered) -->
+        <div id="home-fuel"></div>
         <div class="card" style="animation-delay:0ms">
           <div class="placeholder-body">
             <svg class="placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -66,21 +68,9 @@
         <div id="train-root"></div>
       </section>
 
-      <!-- NUTRITION -->
+      <!-- NUTRITION — Stage 6: food logger (JS-rendered by nutrition-tracker.js) -->
       <section class="screen" id="screen-nutrition" aria-label="Nutrition">
-        <header class="screen-header">
-          <span class="section-label">Nutrition</span>
-        </header>
-        <div class="card" style="animation-delay:0ms">
-          <div class="placeholder-body">
-            <svg class="placeholder-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <path d="M12 2C9 2 7 4.5 7 7c0 2 1 3.5 2 4.5V20a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-8.5c1-1 2-2.5 2-4.5C17 4.5 15 2 12 2z"/>
-              <line x1="12" y1="2" x2="12" y2="7"/>
-            </svg>
-            <p class="placeholder-title">Nutrition</p>
-            <p class="placeholder-sub">Food logger with barcode scan, macro targets, and carb-cycle day types — Stage 6.</p>
-          </div>
-        </div>
+        <div id="nutrition-root"></div>
       </section>
 
       <!-- BODY — Stage 3: dashboard + Stage 2: import tools -->
